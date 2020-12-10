@@ -39,11 +39,11 @@
 			}
 		},
 		methods: {
-			jumpToDetail(){
+			jumpToDetail() {
 				uni.navigateTo({
 					url: "/pages/index/index",
 					success: () => {
-						
+
 					},
 					fail: (err) => {
 						console.log("Error occured: ", err);
