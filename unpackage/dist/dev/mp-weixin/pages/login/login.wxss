@@ -4,8 +4,7 @@
 .login .login-logo.data-v-b237504c {
   width: 240rpx;
   height: 240rpx;
-  -webkit-border-radius: 50%;
-          border-radius: 50%;
+  border-radius: 50%;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -24,17 +23,17 @@
 }
 .login .login-box.data-v-b237504c {
   height: 80rpx;
-  -webkit-border-radius: 40rpx;
-          border-radius: 40rpx;
+  border-radius: 40rpx;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
   -webkit-box-align: center;
   -webkit-align-items: center;
           align-items: center;
-  margin-top: 40rpx;
+  margin-top: 50rpx;
   border: 1rpx solid #219DFF;
-  padding: 0 10rpx;
+  padding: 0 20rpx;
+  position: relative;
 }
 .login .login-box image.data-v-b237504c {
   display: block;
@@ -48,5 +47,22 @@
   -webkit-flex: 1;
           flex: 1;
   margin-left: 20rpx;
+}
+.login .login-box .error.data-v-b237504c {
+  font-size: 24rpx;
+  color: red;
+  line-height: 24rpx;
+  position: absolute;
+  left: 20rpx;
+  bottom: -32rpx;
+}
+.login .login-btn.data-v-b237504c {
+  height: 80rpx;
+  border-radius: 40rpx;
+  background: #219DFF;
+  margin-top: 50rpx;
+  text-align: center;
+  line-height: 80rpx;
+  color: #FFFFFF;
 }
 
