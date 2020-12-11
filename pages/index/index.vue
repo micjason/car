@@ -8,7 +8,7 @@
 			<input class="name" placeholder="请输入司机姓名" placeholder-style="color: #829BBF" />
 			<input class="phone" placeholder="请输入司机手机" placeholder-style="color: #C8C7CE;" />
 		</view>
-		<view class="order-info">
+		<view class="order-info" v-if="orderInfo.length>0">
 			<view class="order-info-box" v-for="(item,index) in orderInfo" :key="index">
 				<view class="order-name">{{item.name}}</view>
 				<view class="order-value">{{item.value}}</view>
@@ -81,7 +81,7 @@
 								<view>{{item2.init.status?item2.init.text:item2.type[item2.typeValue].name}}</view>
 								<image class="project-type-spread" src="../../static/image/down.png"></image>
 
-								<picker class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.typeValue" :range="item2.type" :range-key="name">
+								<picker class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.typeValue" :range="item2.type" range-key="name">
 									<view class="hide-pick-type">{{item2.type[item2.typeValue].name}}</view>
 								</picker>
 							</view>
@@ -111,7 +111,7 @@
 				<view class="result-order-wrapper">
 					<view class="result-order-price">
 						<text class="result-order-price-icon">￥</text>
-						<text class="result-order-price-text">195.5</text>
+						<text class="result-order-price-text">{{result}}</text>
 					</view>
 					<view class="result-order-pay">
 						另需人工费¥100
@@ -128,6 +128,7 @@
 		area,
 		getDate
 	} from '../../static/js/util.js'
+	import {fetch} from '../../static/js/api.js'
 	export default {
 		computed: {
 			startDate() {
@@ -141,23 +142,8 @@
 			return {
 				area,
 				date: '',
-				orderInfo: [{
-						name: '预约单号：',
-						value: 'asdasd1233123'
-					},
-					{
-						name: '预约单号：',
-						value: 'asdasd1233123'
-					},
-					{
-						name: '预约单号：',
-						value: 'asdasd1233123'
-					},
-					{
-						name: '预约单号：',
-						value: 'asdasd1233123'
-					}
-				],
+				result:0,
+				orderInfo: [],
 				basicInfo: [{
 						name: '车牌号码',
 						isMust: true,
@@ -278,21 +264,28 @@
 				}]
 			}
 		},
-		onLoad() {
-			console.log(area)
+		created(){
+			fetch('/api/order',{})
 		},
 		methods: {
 			bindChange(e, index) {
 				this.basicInfo[index].value = e.target.value
 				this.basicInfo[index].init = false
 			},
+			bindTypeChange(e,index,index2){
+				this.project[index].content[index2].init.status = false
+				this.project[index].content[index2].typeValue = Number(e.target.value)
+				this.calcPrice()
+			},
 			deleteOne(index, index2) {
 				if (this.project[index].content[index2].number > 0) {
 					this.project[index].content[index2].number--
 				}
+				this.calcPrice()
 			},
 			plusOne(index, index2) {
 				this.project[index].content[index2].number++
+				this.calcPrice()
 			},
 			deleteProject(index) {
 				const _this = this
@@ -308,7 +301,16 @@
 						}
 					}
 				});
-
+				this.calcPrice()
+			},
+			calcPrice(){
+				let result = 0
+				this.project.forEach((item,index)=>{
+					item.content.forEach((item2,index2)=>{
+						result+=item2.type[item2.typeValue].price*item2.number
+					})
+				})
+				this.result = result
 			}
 		}
 	}
