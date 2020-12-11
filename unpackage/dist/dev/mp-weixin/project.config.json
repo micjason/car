@@ -10,24 +10,26 @@
   },
   "compileType": "miniprogram",
   "libVersion": "",
-  "appid": "wx87813841fa6f9845",
+  "appid": "wxdfce4bb8510b20e6",
   "projectname": "car",
   "condition": {
-    "search": {
-      "current": -1,
-      "list": []
-    },
-    "conversation": {
-      "current": -1,
+    "plugin": {
       "list": []
     },
     "game": {
-      "current": -1,
+      "list": []
+    },
+    "gamePlugin": {
       "list": []
     },
     "miniprogram": {
-      "current": -1,
-      "list": []
+      "list": [
+        {
+          "name": "pages/list/list",
+          "pathName": "pages/list/list",
+          "scene": null
+        }
+      ]
     }
   }
 }

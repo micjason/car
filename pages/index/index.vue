@@ -81,7 +81,8 @@
 								<view>{{item2.init.status?item2.init.text:item2.type[item2.typeValue].name}}</view>
 								<image class="project-type-spread" src="../../static/image/down.png"></image>
 
-								<picker class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.typeValue" :range="item2.type" range-key="name">
+								<picker class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.typeValue" :range="item2.type"
+								 range-key="name">
 									<view class="hide-pick-type">{{item2.type[item2.typeValue].name}}</view>
 								</picker>
 							</view>
@@ -128,7 +129,7 @@
 		area,
 		getDate
 	} from '../../static/js/util.js'
-	import {fetch} from '../../static/js/api.js'
+
 	export default {
 		computed: {
 			startDate() {
@@ -142,8 +143,24 @@
 			return {
 				area,
 				date: '',
-				result:0,
-				orderInfo: [],
+				result: 0,
+				orderInfo: [{
+						name: '预约单号：',
+						value: 'asdasd1233123'
+					},
+					{
+						name: '预约单号：',
+						value: 'asdasd1233123'
+					},
+					{
+						name: '预约单号：',
+						value: 'asdasd1233123'
+					},
+					{
+						name: '预约单号：',
+						value: 'asdasd1233123'
+					}
+				],
 				basicInfo: [{
 						name: '车牌号码',
 						isMust: true,
@@ -264,15 +281,15 @@
 				}]
 			}
 		},
-		created(){
-			fetch('/api/order',{})
+		created() {
+			// console.log(1111,this.$store.state.openid)
 		},
 		methods: {
 			bindChange(e, index) {
 				this.basicInfo[index].value = e.target.value
 				this.basicInfo[index].init = false
 			},
-			bindTypeChange(e,index,index2){
+			bindTypeChange(e, index, index2) {
 				this.project[index].content[index2].init.status = false
 				this.project[index].content[index2].typeValue = Number(e.target.value)
 				this.calcPrice()
@@ -303,11 +320,11 @@
 				});
 				this.calcPrice()
 			},
-			calcPrice(){
+			calcPrice() {
 				let result = 0
-				this.project.forEach((item,index)=>{
-					item.content.forEach((item2,index2)=>{
-						result+=item2.type[item2.typeValue].price*item2.number
+				this.project.forEach((item, index) => {
+					item.content.forEach((item2, index2) => {
+						result += item2.type[item2.typeValue].price * item2.number
 					})
 				})
 				this.result = result

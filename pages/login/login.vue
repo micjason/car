@@ -21,6 +21,8 @@
 		<div class="login-btn" @click="jumpToIndex">
 			登录
 		</div>
+		<view @click="getType('vistor')">游客</view>
+		<view @click="getType('master')">管理员</view>
 	</div>
 </template>
 
@@ -37,41 +39,58 @@
 			}
 		},
 		methods: {
+			
 			jumpToIndex() {
-				if (!this.cpyz(this.carNumber)) {
-					this.carNumberError = true
-					return false
-				} else {
-					this.carNumberError = false
-				}
-				if (!this.judgePhone(this.phone)) {
-					this.phoneError = true
-					return false
-				} else {
-					this.phoneError = false
-				}
-				if (!this.judgePassword(this.phone, this.password)) {
-					this.passwordError = true
-					return false
-				} else {
-					this.passwordError = false
-				}
-				if (!this.carNumberError && !this.phoneError && !this.passwordError) {
-					uni.navigateTo({
-						url: "/pages/index/index",
-						success: () => {
-							this.carNumber = ''
-							this.carNumberError = false
-							this.phone = ''
-							this.phoneError = false
-							this.password = ''
-							this.passwordError = false
-						},
-						fail: (err) => {
-							console.log("Error occured: ", err);
-						},
-					})
-				}
+				const _this = this
+				wx.request({
+					url: 'http://qx.51zhengrui.com/wechat_api/login/login', 
+					data: {
+						openid:_this.$store.state.openid,
+						type: 1,
+						phone:this.phone
+					},
+					header: {
+						'content-type': 'application/json' // 默认值
+					},
+					success(res) {
+						console.log(123,res)
+						this.$store.commit('setToken',res.data.data)
+					}
+				})
+				// if (!this.cpyz(this.carNumber)) {
+				// 	this.carNumberError = true
+				// 	return false
+				// } else {
+				// 	this.carNumberError = false
+				// }
+				// if (!this.judgePhone(this.phone)) {
+				// 	this.phoneError = true
+				// 	return false
+				// } else {
+				// 	this.phoneError = false
+				// }
+				// if (!this.judgePassword(this.phone, this.password)) {
+				// 	this.passwordError = true
+				// 	return false
+				// } else {
+				// 	this.passwordError = false
+				// }
+				// if (!this.carNumberError && !this.phoneError && !this.passwordError) {
+				// 	uni.navigateTo({
+				// 		url: "/pages/index/index",
+				// 		success: () => {
+				// 			this.carNumber = ''
+				// 			this.carNumberError = false
+				// 			this.phone = ''
+				// 			this.phoneError = false
+				// 			this.password = ''
+				// 			this.passwordError = false
+				// 		},
+				// 		fail: (err) => {
+				// 			console.log("Error occured: ", err);
+				// 		},
+				// 	})
+				// }
 			},
 			doJudge(str) {
 				switch (str) {
@@ -128,6 +147,29 @@
 					result = false
 				}
 				return result
+			},
+			getType(type){
+				const _this = this
+				let _type = 1
+				if(type=='vistor'){
+					_type = 1
+				}else{
+					_type = 2
+				}
+				wx.request({
+					url: 'http://qx.51zhengrui.com/wechat_api/login/login', 
+					data: {
+						openid:_this.$store.state.openid,
+						type: _type
+					},
+					header: {
+						'content-type': 'application/json' // 默认值
+					},
+					success(res) {
+						console.log(123,res)
+						// this.$store.commit('setToken',res.data.data)
+					}
+				})
 			}
 		}
 	}
