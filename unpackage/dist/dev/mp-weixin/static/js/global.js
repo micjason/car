@@ -12,7 +12,7 @@ export default {
 					success: function(loginRes) {
 						if (loginRes.code) {
 							wx.request({
-								url: 'http://qx.51zhengrui.com/wechat_api/login/get_openid', 
+								url: 'http://qx.51zhengrui.com/wechat_api/login/get_openid',
 								data: {
 									code: loginRes.code
 								},
@@ -23,6 +23,8 @@ export default {
 									_this.$store.commit('setOpenid', JSON.parse(res.data.data).openid)
 								}
 							})
+
+							
 						}
 					}
 				});

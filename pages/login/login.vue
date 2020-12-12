@@ -1,106 +1,90 @@
 <template>
-	<div class="login">
+	<view class="login">
 		<view class="login-logo">
 			<image src="../../static/image/logo.png"></image>
 		</view>
-		<div class="login-box">
-			<image src="../../static/image/car.png"></image>
-			<input type="text" v-model="carNumber" @blur="doJudge('car')" placeholder="请输入车牌号">
-			<view class="error" v-if="carNumberError">车牌号有误</view>
-		</div>
-		<div class="login-box">
+		<view class="login-box">
 			<image src="../../static/image/user.png"></image>
 			<input type="number" v-model="phone" @blur="doJudge('phone')" placeholder="请输入电话号码">
 			<view class="error" v-if="phoneError">电话号码有误</view>
-		</div>
-		<div class="login-box">
+		</view>
+		<view class="login-box">
 			<image src="../../static/image/password.png"></image>
 			<input type="number" v-model="password" @blur="doJudge('pass')" placeholder="请输入密码">
 			<view class="error" v-if="passwordError">密码有误</view>
-		</div>
-		<div class="login-btn" @click="jumpToIndex">
-			登录
-		</div>
-		<view @click="getType('vistor')">游客</view>
-		<view @click="getType('master')">管理员</view>
-	</div>
+		</view>
+		<view class="login-btn" @click="handleBind">
+			绑定
+		</view>
+	</view>
 </template>
 
 <script>
 	export default {
 		data() {
 			return {
-				carNumber: '',
-				carNumberError: false,
 				phone: '',
 				phoneError: false,
 				password: '',
 				passwordError: false,
+				identify: 1,
 			}
 		},
+		onLoad: function(option) {
+			console.log('option',option)
+			if(option){
+				this.identify = parseInt(option.type)
+			}	
+		},
 		methods: {
-			
-			jumpToIndex() {
+			handleBind() {
 				const _this = this
-				wx.request({
-					url: 'http://qx.51zhengrui.com/wechat_api/login/login', 
-					data: {
-						openid:_this.$store.state.openid,
-						type: 1,
-						phone:this.phone
-					},
-					header: {
-						'content-type': 'application/json' // 默认值
-					},
-					success(res) {
-						console.log(123,res)
-						this.$store.commit('setToken',res.data.data)
-					}
-				})
-				// if (!this.cpyz(this.carNumber)) {
-				// 	this.carNumberError = true
-				// 	return false
-				// } else {
-				// 	this.carNumberError = false
-				// }
-				// if (!this.judgePhone(this.phone)) {
-				// 	this.phoneError = true
-				// 	return false
-				// } else {
-				// 	this.phoneError = false
-				// }
-				// if (!this.judgePassword(this.phone, this.password)) {
-				// 	this.passwordError = true
-				// 	return false
-				// } else {
-				// 	this.passwordError = false
-				// }
-				// if (!this.carNumberError && !this.phoneError && !this.passwordError) {
-				// 	uni.navigateTo({
-				// 		url: "/pages/index/index",
-				// 		success: () => {
-				// 			this.carNumber = ''
-				// 			this.carNumberError = false
-				// 			this.phone = ''
-				// 			this.phoneError = false
-				// 			this.password = ''
-				// 			this.passwordError = false
-				// 		},
-				// 		fail: (err) => {
-				// 			console.log("Error occured: ", err);
-				// 		},
-				// 	})
-				// }
+				if (!this.judgePhone(this.phone)) {
+					this.phoneError = true
+					return false
+				} else {
+					this.phoneError = false
+				}
+				if (!this.judgePassword(this.phone, this.password)) {
+					this.passwordError = true
+					return false
+				} else {
+					this.passwordError = false
+				}
+				if (!this.phoneError && !this.passwordError) {
+					wx.request({
+						url: 'http://qx.51zhengrui.com/wechat_api/login/login',
+						data: {
+							openid: _this.$store.state.openid,
+							type: this.identify,
+							phone: this.phone
+						},
+						header: {
+							'content-type': 'application/json'
+						},
+						success(res) {
+							this.$store.commit('setToken', res.data.data)
+							uni.navigateTo({
+								url: "/pages/index/index",
+								success: () => {
+									this.phone = ''
+									this.phoneError = false
+									this.password = ''
+									this.passwordError = false
+								}
+							})
+						},
+						fail(err) {
+							uni.showToast({
+								title: '手机号未在后台添加',
+								duration: 2000
+							});
+						}
+					})
+				}
 			},
 			doJudge(str) {
 				switch (str) {
-					case 'car':
-						if (!this.cpyz(this.carNumber)) {
-							this.carNumberError = true
-						} else {
-							this.carNumberError = false
-						}
-						break;
 					case 'phone':
 						if (!this.judgePhone(this.phone)) {
 							this.phoneError = true
@@ -116,18 +100,6 @@
 						}
 						break;
 				}
-			},
-			cpyz(str) {
-				let newcarnum = str.toUpperCase();
-				let result = false
-				let regExp =
-					/(^[\u4E00-\u9FA5]{1}[A-Z0-9]{6}$)|(^[A-Z]{2}[A-Z0-9]{2}[A-Z0-9\u4E00-\u9FA5]{1}[A-Z0-9]{4}$)|(^[\u4E00-\u9FA5]{1}[A-Z0-9]{5}[挂学警军港澳]{1}$)|(^[A-Z]{2}[0-9]{5}$)|(^(08|38){1}[A-Z0-9]{4}[A-Z0-9挂学警军港澳]{1}$)/;
-				if (newcarnum != "") {
-					if (regExp.test(newcarnum)) {
-						result = true
-					}
-				}
-				return result
 			},
 			judgePhone(str) {
 				let mobileReg = new RegExp(/^1[3456789]\d{9}$/)
@@ -147,29 +119,6 @@
 					result = false
 				}
 				return result
-			},
-			getType(type){
-				const _this = this
-				let _type = 1
-				if(type=='vistor'){
-					_type = 1
-				}else{
-					_type = 2
-				}
-				wx.request({
-					url: 'http://qx.51zhengrui.com/wechat_api/login/login', 
-					data: {
-						openid:_this.$store.state.openid,
-						type: _type
-					},
-					header: {
-						'content-type': 'application/json' // 默认值
-					},
-					success(res) {
-						console.log(123,res)
-						// this.$store.commit('setToken',res.data.data)
-					}
-				})
 			}
 		}
 	}

@@ -14,7 +14,8 @@
   -webkit-justify-content: space-between;
           justify-content: space-between;
   padding: 0 64rpx 0 54rpx;
-  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
   color: #FFFFFF;
 }
 .content .input-box .name.data-v-57280228,
@@ -22,7 +23,8 @@
   width: 263rpx;
   height: 48rpx;
   line-height: 48rpx;
-  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
   font-size: 24rpx;
   font-family: PingFang SC;
   font-weight: 500;
@@ -37,7 +39,8 @@
 .content .input-box.drak .phone.data-v-57280228 {
   padding: 0 17rpx;
   background: #174587;
-  border-radius: 16rpx;
+  -webkit-border-radius: 16rpx;
+          border-radius: 16rpx;
 }
 .content .input-box.light.data-v-57280228 {
   background-color: #E2EEFF;
@@ -49,7 +52,8 @@
 .content .input-box.light .phone.data-v-57280228 {
   padding: 0 17rpx;
   background: #FFFFFF;
-  border-radius: 16rpx;
+  -webkit-border-radius: 16rpx;
+          border-radius: 16rpx;
   color: #2459A6;
 }
 .content .order-info.data-v-57280228 {
@@ -216,7 +220,8 @@
   width: 50rpx;
   height: 50rpx;
   background: #D33E5A;
-  border-radius: 4rpx;
+  -webkit-border-radius: 4rpx;
+          border-radius: 4rpx;
   text-align: center;
   line-height: 50rpx;
   font-size: 32rpx;
@@ -361,7 +366,8 @@
   color: #868590;
   line-height: 46rpx;
   background: #F5F5F8;
-  border-radius: 8px;
+  -webkit-border-radius: 8px;
+          border-radius: 8px;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;

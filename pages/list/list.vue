@@ -1,6 +1,6 @@
 <template>
-	<div class="list">
-		<div class="list-box" v-for="(item,index) in listData" :key="index" @click="jumpToDetail">
+	<view class="list">
+		<view class="list-box" v-for="(item,index) in listData" :key="index" @click="jumpToDetail">
 			<view class="list-name list-common">
 				<view class="list-common-left">维修项目：</view>
 				<view class="list-common-right">{{item.name}}</view>
@@ -12,8 +12,8 @@
 			<view class="list-time">
 				订单时间：{{item.time}}
 			</view>
-		</div>
-	</div>
+		</view>
+	</view>
 </template>
 
 <script>
