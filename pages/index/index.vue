@@ -60,50 +60,56 @@
 				</view>
 			</view>
 		</view>
-		<view class="maintain-info">
+		<view class="maintain-info" v-if="projectArray.length>0">
 			<view class="common-title">
 				<image src="../../static/image/line.png"></image>
 				<text>维修信息</text>
 			</view>
-			<view class="project-wrapper" v-for="(item,index) in project" :key="index">
+			<view class="project-wrapper" v-for="(item,index) in projectArray" :key="index">
 				<view class="project-title">
 					<view class="project-name-wrapper">
-						<view class="project-name">{{item.name}}</view>
+						<view class="project-name">{{item.maintenance_items_name}}</view>
 						<image src="../../static/image/arrow.png"></image>
 					</view>
 					<image @click="deleteProject(index)" class="project-name-delete" src="../../static/image/delete.png"></image>
 				</view>
-				<view class="project-content" v-for="(item2,index2) in item.content" :key="index2">
-					<view class="project-left">
-						<view class="project-left-top">
-							<view class="project-left-name">{{item2.name}}</view>
-							<view class="project-left-type">
-								<view>{{item2.init.status?item2.init.text:item2.type[item2.typeValue].name}}</view>
-								<image class="project-type-spread" src="../../static/image/down.png"></image>
-
-								<picker class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.typeValue" :range="item2.type"
-								 range-key="name">
-									<view class="hide-pick-type">{{item2.type[item2.typeValue].name}}</view>
-								</picker>
+				<template v-if="item.content&&item.content.length>0">
+					<view class="project-content" v-for="(item2,index2) in item.content" :key="index2">
+						<view class="project-left">
+							<view class="project-left-top">
+								<view class="project-left-name">{{item2.brand}}</view>
+								<view class="project-left-type">
+									<view>123</view>
+									<image class="project-type-spread" src="../../static/image/down.png"></image>
+					
+									<picker class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.typeValue" :range="item2.type"
+									 range-key="name">
+										<view class="hide-pick-type">{{item2.type[item2.typeValue].name}}</view>
+									</picker>
+								</view>
+							</view>
+							<view class="project-left-price">
+								￥{{item2.init.status?item2.init.price:item2.type[item2.typeValue].price}}
+								<text class="project-price-unit">/{{item2.unit}}</text>
 							</view>
 						</view>
-						<view class="project-left-price">
-							￥{{item2.init.status?item2.init.price:item2.type[item2.typeValue].price}}
-							<text class="project-price-unit">/{{item2.unit}}</text>
+						<view class="project-right">
+							<image @click="deleteOne(index,index2)" class="project-right-minus" src='../../static/image/minus.png'></image>
+							<view class="project-right-number">{{item2.number}}</view>
+							<image @click="plusOne(index,index2)" class="project-right-plus" src='../../static/image/plus.png'></image>
 						</view>
 					</view>
-					<view class="project-right">
-						<image @click="deleteOne(index,index2)" class="project-right-minus" src='../../static/image/minus.png'></image>
-						<view class="project-right-number">{{item2.number}}</view>
-						<image @click="plusOne(index,index2)" class="project-right-plus" src='../../static/image/plus.png'></image>
-					</view>
-				</view>
+				</template>
 			</view>
 		</view>
 
-		<view class="project-add">
+		<view class="project-add" v-if="projectArray.length>0">
 			<image class="project-add-icon" src='../../static/image/add.png'></image>
-			<view class="project-add-text">添加维修项目</view>
+			<view class="project-add-text" @click="addProject">添加维修项目</view>
+			<picker class="hide-pick" @change="handleProject" :value="projectIndex" :range="projectArray"
+			 range-key="maintenance_items_name">
+				<view class="hide-pick-project">123</view>
+			</picker>
 		</view>
 
 		<view class="result">
@@ -144,6 +150,8 @@
 				area,
 				date: '',
 				result: 0,
+				projectArray:[],
+				projectIndex:0,
 				orderInfo: [{
 						name: '预约单号：',
 						value: 'asdasd1233123'
@@ -203,86 +211,42 @@
 						init: true
 					},
 				],
-				project: [{
-					name: '发动机定期保养',
-					content: [{
-							name: '机油',
-							unit: '升',
-							type: [{
-									name: '10万公里',
-									price: 100
-								},
-								{
-									name: '20万公里',
-									price: 200
-								},
-								{
-									name: '30万公里',
-									price: 300
-								}
-							],
-							init: {
-								status: true,
-								text: '10万公里',
-								price: 100
-							},
-							typeValue: 0,
-							number: 0
-						},
-						{
-							name: '机滤',
-							unit: '只',
-							type: [{
-									name: '马勒MAHLE机油bai滤芯',
-									price: 100
-								},
-								{
-									name: '曼牌',
-									price: 200
-								},
-								{
-									name: '马勒',
-									price: 300
-								}
-							],
-							typeValue: 0,
-							init: {
-								status: true,
-								text: '品牌配件',
-								price: 100
-							},
-							number: 0
-						},
-						{
-							name: '柴滤',
-							unit: '只',
-							type: [{
-									name: '马勒MAHLE机油bai滤芯',
-									price: 100
-								},
-								{
-									name: '曼牌',
-									price: 200
-								},
-								{
-									name: '马勒',
-									price: 300
-								}
-							],
-							init: {
-								status: true,
-								text: '品牌配件',
-								price: 100
-							},
-							typeValue: 0,
-							number: 0
-						},
-					]
-				}]
+				ids:[]
 			}
 		},
 		created() {
-			// console.log(1111,this.$store.state.openid)
+			const _this = this
+			console.log(111,_this.$store.state.openid)
+			wx.request({
+				url: 'http://qx.51zhengrui.com/wechat_api/order/get_maintenance_items',
+				data: {},
+				header: {
+					'token':_this.$store.state.token,
+					'content-type': 'application/json'
+				},
+				success(res) {
+					if (res.data.code == 0) {
+						_this.projectArray = res.data.data
+					}
+				}
+			})
+			
+			wx.request({
+				url: 'http://qx.51zhengrui.com/wechat_api/order/get_member_information',
+				data: {
+					'openid':_this.$store.state.openid,
+				},
+				header: {
+					'token':_this.$store.state.token,
+					'content-type': 'application/json'
+				},
+				success(res) {
+					if (res.data.code == 0) {
+						
+					}
+					console.log('member_information',res)
+				}
+			})
 		},
 		methods: {
 			bindChange(e, index) {
@@ -328,6 +292,45 @@
 					})
 				})
 				this.result = result
+			},
+			handleProject(e){
+				let tmp_id = this.projectArray[Number(e.target.value)].maintenance_items_id
+				this.getProjectInfo(tmp_id,Number(e.target.value))
+			},
+			getProjectInfo(id,_index){
+				if(this.ids.indexOf(id)!==-1){
+					return false
+				}
+				else{
+					this.ids.push(id)
+				}
+				const _this = this
+				wx.request({
+					url: 'http://qx.51zhengrui.com/wechat_api/order/get_parts_good_list',
+					data: {
+						'maintenance_items_id':id
+					},
+					header: {
+						'token':_this.$store.state.token,
+						'content-type': 'application/json'
+					},
+					success(res) {
+						if (res.data.code == 0) {
+							res.data.data.forEach(item=>{
+								if(item.brand&&item.brand.length>0){
+									item.brandValue = 0
+									item.brand.forEach(item2=>{
+										if(item2.item_type&&item2.item_type.length>0){
+											item2.itemValue = 0
+										}
+									})
+								}
+							})
+							_this.projectArray[_index].content = res.data.data
+							console.log('xxxuuu',_this.projectArray)
+						}
+					}
+				})
 			}
 		}
 	}
@@ -453,6 +456,11 @@
 			.hide-pick-type {
 				width: 100%;
 				height: 46rpx;
+			}
+			
+			.hide-pick-project {
+				width: 100%;
+				height: 94rpx;
 			}
 		}
 
@@ -713,6 +721,7 @@
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			position: relative;
 
 			.project-add-icon {
 				width: 24rpx;

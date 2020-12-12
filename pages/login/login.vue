@@ -8,11 +8,11 @@
 			<input type="number" v-model="phone" @blur="doJudge('phone')" placeholder="请输入电话号码">
 			<view class="error" v-if="phoneError">电话号码有误</view>
 		</view>
-		<view class="login-box">
+		<!-- <view class="login-box">
 			<image src="../../static/image/password.png"></image>
 			<input type="number" v-model="password" @blur="doJudge('pass')" placeholder="请输入密码">
 			<view class="error" v-if="passwordError">密码有误</view>
-		</view>
+		</view> -->
 		<view class="login-btn" @click="handleBind">
 			绑定
 		</view>
@@ -31,54 +31,59 @@
 			}
 		},
 		onLoad: function(option) {
-			console.log('option',option)
-			if(option){
+			console.log('option', option)
+			if (option) {
 				this.identify = parseInt(option.type)
-			}	
+			}
 		},
 		methods: {
 			handleBind() {
 				const _this = this
-				if (!this.judgePhone(this.phone)) {
-					this.phoneError = true
+				if (!_this.judgePhone(_this.phone)) {
+					_this.phoneError = true
 					return false
 				} else {
-					this.phoneError = false
+					_this.phoneError = false
 				}
-				if (!this.judgePassword(this.phone, this.password)) {
-					this.passwordError = true
-					return false
-				} else {
-					this.passwordError = false
-				}
-				if (!this.phoneError && !this.passwordError) {
+				// if (!_this.judgePassword(_this.phone, _this.password)) {
+				// 	_this.passwordError = true
+				// 	return false
+				// } else {
+				// 	_this.passwordError = false
+				// }
+				if (!_this.phoneError) {
 					wx.request({
 						url: 'http://qx.51zhengrui.com/wechat_api/login/login',
 						data: {
 							openid: _this.$store.state.openid,
-							type: this.identify,
-							phone: this.phone
+							type: _this.identify,
+							phone: _this.phone
 						},
 						header: {
 							'content-type': 'application/json'
 						},
 						success(res) {
-							this.$store.commit('setToken', res.data.data)
-							uni.navigateTo({
-								url: "/pages/index/index",
-								success: () => {
-									this.phone = ''
-									this.phoneError = false
-									this.password = ''
-									this.passwordError = false
-								}
-							})
+							if (res.data.code == 0) {
+								_this.$store.commit('setToken', res.data.data)
+								uni.navigateTo({
+									url: "/pages/index/index",
+									success: () => {
+										_this.phone = ''
+										_this.phoneError = false
+										// _this.password = ''
+										// _this.passwordError = false
+									}
+								})
+							} else {
+								uni.showToast({
+									icon:'none',
+									title: res.data.msg,
+									duration: 2000
+								});
+							}
 						},
 						fail(err) {
-							uni.showToast({
-								title: '手机号未在后台添加',
-								duration: 2000
-							});
+
 						}
 					})
 				}

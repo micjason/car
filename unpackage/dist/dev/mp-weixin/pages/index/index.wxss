@@ -123,6 +123,10 @@
   width: 100%;
   height: 46rpx;
 }
+.content .hide-pick .hide-pick-project.data-v-57280228 {
+  width: 100%;
+  height: 94rpx;
+}
 .content .basic-info.data-v-57280228 {
   margin-top: 36rpx;
 }
@@ -423,6 +427,7 @@
   -webkit-box-pack: center;
   -webkit-justify-content: center;
           justify-content: center;
+  position: relative;
 }
 .content .project-add .project-add-icon.data-v-57280228 {
   width: 24rpx;

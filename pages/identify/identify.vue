@@ -20,7 +20,7 @@
 			}
 		},
 		created() {
-			this.aa()
+
 		},
 		methods: {
 			login(type) {
@@ -37,17 +37,29 @@
 							'content-type': 'application/json'
 						},
 						success(res) {
-							_this.$store.commit('setToken', res.data.data)
-							uni.navigateTo({
-								url: "/pages/index/index",
-								success: () => {}
-							})
+							if(res.data.code == 0){
+								uni.navigateTo({
+									url: "/pages/index/index",
+									success: () => {}
+								})
+								_this.$store.commit('setToken', res.data.data)
+							}
+							else if(res.data.code == -2){
+								uni.navigateTo({
+									url: `/pages/login/login?type=${_this.identify}`,
+									success: () => {}
+								})
+							}
+							else{
+								uni.showToast({
+									icon:'none',
+									title: res.data.msg,
+									duration: 2000
+								});
+							}
 						},
 						fail() {
-							uni.navigateTo({
-								url: `/pages/login/login?type=${_this.identify}`,
-								success: () => {}
-							})
+							
 						}
 					})
 				} else {
@@ -75,17 +87,29 @@
 												'content-type': 'application/json'
 											},
 											success(res) {
-												_this.$store.commit('setToken', res.data.data)
-												uni.navigateTo({
-													url: "/pages/index/index",
-													success: () => {}
-												})
+												if(res.data.code == 0){
+													uni.navigateTo({
+														url: "/pages/index/index",
+														success: () => {}
+													})
+													_this.$store.commit('setToken', res.data.data)
+												}
+												else if(res.data.code == -2){
+													uni.navigateTo({
+														url: `/pages/login/login?type=${_this.identify}`,
+														success: () => {}
+													})
+												}
+												else{
+													uni.showToast({
+														icon:'none',
+														title: res.data.msg,
+														duration: 2000
+													});
+												}
 											},
 											fail() {
-												uni.navigateTo({
-													url: `/pages/login/login?type=${_this.identify}`,
-													success: () => {}
-												})
+												
 											}
 										})
 									}
@@ -103,13 +127,6 @@
 					}, 3000)
 				})
 			},
-			async aa() {
-				await this.test().catch(res=>{
-					console.log(111222,res)
-				})
-				console.log(333)
-			}
-
 		}
 	}
 </script>
