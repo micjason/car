@@ -1,25 +1,86 @@
 <template>
 	<view class="content">
-		<view class="input-box drak">
-			<input class="name" focus placeholder="请输入车主姓名" placeholder-style="color: #FFFFFF;" />
-			<input class="phone" placeholder="请输入电话号码" placeholder-style="color: #5C8ACD;" />
-		</view>
-		<view class="input-box light">
-			<input class="name" placeholder="请输入司机姓名" placeholder-style="color: #829BBF" />
-			<input class="phone" placeholder="请输入司机手机" placeholder-style="color: #C8C7CE;" />
-		</view>
-		<view class="order-info" v-if="orderInfo.length>0">
-			<view class="order-info-box" v-for="(item,index) in orderInfo" :key="index">
-				<view class="order-name">{{item.name}}</view>
-				<view class="order-value">{{item.value}}</view>
+		<view class="input-box drak" v-if="Object.keys(memberInfo).length>0">
+			<view class="input-box-cell">
+				车主姓名：{{memberInfo.member_name||''}}
+			</view>
+			<view class="input-box-cell">
+				车主电话：{{memberInfo.member_phone||''}}
 			</view>
 		</view>
-		<view class="basic-info">
+		<view class="input-box light" v-if="Object.keys(memberInfo).length>0">
+			<view class="input-box-cell">
+				司机姓名：{{memberInfo.member_driver||''}}
+			</view>
+			<view class="input-box-cell">
+				司机电话：{{memberInfo.member_driver_phone||''}}
+			</view>
+		</view>
+		<view class="order-info" v-if="Object.keys(memberInfo).length>0">
+			<view class="order-info-box" v-if="memberInfo.order_no">
+				<view class="order-name">{{memberInfo.order_type==1?'预约单号':'承修单号'}}：</view>
+				<view class="order-value">{{memberInfo.order_no}}</view>
+			</view>
+			<view class="order-info-box" v-if="memberInfo.staff_id">
+				<view class="order-name">维修技师</view>
+				<view class="order-value">{{memberInfo.staff_id}}</view>
+			</view>
+		</view>
+		<view class="basic-info" v-if="Object.keys(memberInfo).length>0">
 			<view class="common-title">
 				<image src="../../static/image/line.png"></image>
 				<text>基本信息</text>
 			</view>
-			<view class="info-box" v-for="(item,index) in basicInfo" :key="index">
+			<view class="info-box">
+				<view class="info-left"><text class="must">*</text></view>
+				<view class="info-right">
+					<view class="info-name">
+						车牌号码
+					</view>
+					<view class="info-value">
+						<view class="info-value-place">
+							{{getCar(memberInfo.vehicle_number)}}
+						</view>
+						<view class="info-value-carnumber">
+							{{getNumber(memberInfo.vehicle_number)}}
+						</view>
+					</view>
+				</view>
+			</view>
+			<view class="info-box">
+				<view class="info-left"><text class="must">*</text></view>
+				<view class="info-right">
+					<view class="info-name">
+						车型
+					</view>
+					<view class="info-value">
+						{{memberInfo.motorcycle_type_name}}
+					</view>
+				</view>
+			</view>
+			<view class="info-box">
+				<view class="info-left"><text class="must">*</text></view>
+				<view class="info-right">
+					<view class="info-name">
+						里程
+					</view>
+					<view class="info-value">
+						{{memberInfo.maintenance_mileage_number}}
+					</view>
+				</view>
+			</view>
+			<view class="info-box">
+				<view class="info-left"><text class="must">*</text></view>
+				<view class="info-right">
+					<view class="info-name">
+						VIN
+					</view>
+					<view class="info-value">
+						{{memberInfo.frame_number}}
+					</view>
+				</view>
+			</view>
+			<!-- <view class="info-box">
 				<view class="info-left"><text v-if="item.isMust" class="must">*</text></view>
 				<view class="info-right">
 					<view class="info-name">
@@ -28,37 +89,27 @@
 					<view class="info-value">
 						<view v-if="item.type==='carNumber'" class="info-value-carnumber">
 							<view class="info-car-wrapper">
-								<view class="info-car-name">{{area[item.value]}}</view>
+								<view class="info-car-name">{{}}</view>
 								<image class="info-car-icon" src="../../static/image/arrow.png"></image>
-
-								<picker class="hide-pick" v-if="item.type==='carNumber'" @change="bindChange($event,index)" :value="item.value"
-								 :range="area">
-									<view class="hide-pick-car">{{area[item.value]}}</view>
-								</picker>
 							</view>
 							<input class="info-car-input" type="text" :placeholder="'请输入'+item.name" placeholder-style="color:#C8C7CE">
 						</view>
 						<input v-if="item.type==='input'" class="info-value-input" type="text" :placeholder="'请输入'+item.name"
 						 placeholder-style="color:#C8C7CE">
-						<view v-if="item.type==='select' || item.type==='time'" :class="['info-value-select',item.init?'no-value':'']">
-							{{item.init?('请选择'+item.name):(item.type==='select'?item.content[item.value]:item.value)}}
+						<view :class="['info-value-select',item.init?'no-value':'']">
+							
 						</view>
 						<view v-if="item.type==='select'||item.type==='time'" class="info-value-arrow">
 							<image src="../../static/image/arrow.png"></image>
 						</view>
-
-						<picker class="hide-pick" v-if="item.type==='select'" @change="bindChange($event,index)" :value="item.value"
-						 :range="item.content">
-							<view class="hide-pick-text">{{item.content[item.value]}}</view>
-						</picker>
-
+			
 						<picker class="hide-pick" v-if="item.type==='time'" mode="date" :value="item.value" :start="startDate" :end="endDate"
 						 @change="bindChange($event,index)">
 							<view class="hide-pick-text">{{item.value}}</view>
 						</picker>
 					</view>
 				</view>
-			</view>
+			</view> -->
 		</view>
 		<view class="maintain-info" v-if="projectArray.length>0">
 			<view class="common-title">
@@ -66,37 +117,47 @@
 				<text>维修信息</text>
 			</view>
 			<view class="project-wrapper" v-for="(item,index) in projectArray" :key="index">
-				<view class="project-title">
-					<view class="project-name-wrapper">
-						<view class="project-name">{{item.maintenance_items_name}}</view>
-						<image src="../../static/image/arrow.png"></image>
-					</view>
-					<image @click="deleteProject(index)" class="project-name-delete" src="../../static/image/delete.png"></image>
-				</view>
 				<template v-if="item.content&&item.content.length>0">
+					<view class="project-title">
+						<view class="project-name-wrapper">
+							<view class="project-name">{{item.maintenance_items_name}}</view>
+							<image src="../../static/image/arrow.png"></image>
+						</view>
+						<image @click="deleteProject(index)" class="project-name-delete" src="../../static/image/delete.png"></image>
+					</view>
 					<view class="project-content" v-for="(item2,index2) in item.content" :key="index2">
 						<view class="project-left">
 							<view class="project-left-top">
-								<view class="project-left-name">{{item2.brand}}</view>
-								<view class="project-left-type">
-									<view>123</view>
+								<view class="project-left-name">{{item2.parts_name}}</view>
+								<view class="project-left-type" v-if="item2.brand&&item2.brand.length>0">
+									<view>{{item2.brand[item2.brandValue].brand_name}}</view>
 									<image class="project-type-spread" src="../../static/image/down.png"></image>
-					
-									<picker class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.typeValue" :range="item2.type"
-									 range-key="name">
-										<view class="hide-pick-type">{{item2.type[item2.typeValue].name}}</view>
+
+									<picker class="hide-pick" @change="bindBrandChange($event,index,index2)" :value="item2.brandValue" :range="item2.brand"
+									 range-key="brand_name">
+										<view class="hide-pick-type">{{item2.brand[item2.brandValue].brand_name}}</view>
+									</picker>
+								</view>
+
+								<view class="project-left-type" v-if="item2.brand&&item2.brand.length>0&&item2.brand[item2.brandValue].item_type&&item2.brand[item2.brandValue].item_type.length>0">
+									<view>{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].item_type_name}}</view>
+									<image class="project-type-spread" src="../../static/image/down.png"></image>
+
+									<picker class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.brand[item2.brandValue].itemValue"
+									 :range="item2.brand[item2.brandValue].item_type" range-key="item_type_name">
+										<view class="hide-pick-type">{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].item_type_name}}</view>
 									</picker>
 								</view>
 							</view>
-							<view class="project-left-price">
-								￥{{item2.init.status?item2.init.price:item2.type[item2.typeValue].price}}
-								<text class="project-price-unit">/{{item2.unit}}</text>
+							<view class="project-left-price" v-if="item2.brand&&item2.brand.length>0&&item2.brand[item2.brandValue].item_type&&item2.brand[item2.brandValue].item_type.length>0">
+								￥{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_price}}
+								<text class="project-price-unit">/{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_unit}}</text>
 							</view>
 						</view>
 						<view class="project-right">
-							<image @click="deleteOne(index,index2)" class="project-right-minus" src='../../static/image/minus.png'></image>
-							<view class="project-right-number">{{item2.number}}</view>
-							<image @click="plusOne(index,index2)" class="project-right-plus" src='../../static/image/plus.png'></image>
+							<image @click="getNumber('minus',index,index2)" class="project-right-minus" src='../../static/image/minus.png'></image>
+							<view class="project-right-number">{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_number==0?'':item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_number}}</view>
+							<image @click="getNumber('plus',index,index2)" class="project-right-plus" src='../../static/image/plus.png'></image>
 						</view>
 					</view>
 				</template>
@@ -106,9 +167,8 @@
 		<view class="project-add" v-if="projectArray.length>0">
 			<image class="project-add-icon" src='../../static/image/add.png'></image>
 			<view class="project-add-text" @click="addProject">添加维修项目</view>
-			<picker class="hide-pick" @change="handleProject" :value="projectIndex" :range="projectArray"
-			 range-key="maintenance_items_name">
-				<view class="hide-pick-project">123</view>
+			<picker class="hide-pick" @change="handleProject" :value="projectIndex" :range="projectArray" range-key="maintenance_items_name">
+				<view class="hide-pick-project">维修项目</view>
 			</picker>
 		</view>
 
@@ -132,7 +192,6 @@
 
 <script>
 	import {
-		area,
 		getDate
 	} from '../../static/js/util.js'
 
@@ -147,127 +206,91 @@
 		},
 		data() {
 			return {
-				area,
 				date: '',
 				result: 0,
-				projectArray:[],
-				projectIndex:0,
-				orderInfo: [{
-						name: '预约单号：',
-						value: 'asdasd1233123'
-					},
-					{
-						name: '预约单号：',
-						value: 'asdasd1233123'
-					},
-					{
-						name: '预约单号：',
-						value: 'asdasd1233123'
-					},
-					{
-						name: '预约单号：',
-						value: 'asdasd1233123'
-					}
-				],
-				basicInfo: [{
-						name: '车牌号码',
-						isMust: true,
-						type: 'carNumber',
-						value: '',
-						init: true
-					},
-					{
-						name: '车型',
-						isMust: true,
-						type: 'select',
-						content: ['中国', '美国', '巴西', '日本'],
-						value: 0,
-						init: true
-					},
-					{
-						name: '里程',
-						isMust: true,
-						type: 'input',
-						value: ''
-					},
-					{
-						name: 'VIN',
-						isMust: true,
-						type: 'input',
-						value: ''
-					},
-					{
-						name: '下次换油日期',
-						isMust: false,
-						type: 'time',
-						value: getDate(),
-						init: true
-					},
-					{
-						name: '结清日期',
-						isMust: false,
-						type: 'time',
-						value: getDate(),
-						init: true
-					},
-				],
-				ids:[]
+				projectArray: [],
+				projectIndex: 0,
+				memberInfo:{},
+				ids: []
 			}
 		},
 		created() {
-			const _this = this
-			console.log(111,_this.$store.state.openid)
-			wx.request({
-				url: 'http://qx.51zhengrui.com/wechat_api/order/get_maintenance_items',
-				data: {},
-				header: {
-					'token':_this.$store.state.token,
-					'content-type': 'application/json'
-				},
-				success(res) {
-					if (res.data.code == 0) {
-						_this.projectArray = res.data.data
-					}
-				}
-			})
-			
-			wx.request({
-				url: 'http://qx.51zhengrui.com/wechat_api/order/get_member_information',
-				data: {
-					'openid':_this.$store.state.openid,
-				},
-				header: {
-					'token':_this.$store.state.token,
-					'content-type': 'application/json'
-				},
-				success(res) {
-					if (res.data.code == 0) {
-						
-					}
-					console.log('member_information',res)
-				}
-			})
+			this.getBasicInfo()
+			this.getAllProject()
 		},
 		methods: {
 			bindChange(e, index) {
 				this.basicInfo[index].value = e.target.value
 				this.basicInfo[index].init = false
 			},
+			// 获取基本信息
+			getBasicInfo(){
+				const _this = this
+				wx.request({
+					url: 'http://qx.51zhengrui.com/wechat_api/order/get_member_information',
+					data: {
+						'openid': _this.$store.state.openid,
+					},
+					header: {
+						'token': _this.$store.state.token,
+						'content-type': 'application/json'
+					},
+					success(res) {
+						if (res.data.code == 0) {
+							_this.memberInfo = res.data.data
+						}
+						console.log('member_information', res)
+					}
+				})
+			},
+			// 获取所有项目选项
+			getAllProject() {
+				const _this = this
+				wx.request({
+					url: 'http://qx.51zhengrui.com/wechat_api/order/get_maintenance_items',
+					data: {},
+					header: {
+						'token': _this.$store.state.token,
+						'content-type': 'application/json'
+					},
+					success(res) {
+						if (res.data.code == 0) {
+							_this.projectArray = res.data.data
+						}
+					}
+				})
+			},
+			// 商品下拉
+			bindBrandChange(e, index, index2) {
+				this.projectArray[index].content[index2].brandValue = Number(e.detail.value)
+				this.$forceUpdate()
+				this.calcPrice()
+			},
+			// 型号下拉
 			bindTypeChange(e, index, index2) {
-				this.project[index].content[index2].init.status = false
-				this.project[index].content[index2].typeValue = Number(e.target.value)
+				let brandValue = this.projectArray[index].content[index2].brandValue
+				this.projectArray[index].content[index2].brand[brandValue].itemValue = Number(e.detail.value)
+				this.$forceUpdate()
 				this.calcPrice()
 			},
-			deleteOne(index, index2) {
-				if (this.project[index].content[index2].number > 0) {
-					this.project[index].content[index2].number--
+			// 增减数量
+			getNumber(type, index, index2) {
+				let brandValue = this.projectArray[index].content[index2].brandValue
+				let itemValue = this.projectArray[index].content[index2].brand[brandValue].itemValue
+				let num = this.projectArray[index].content[index2].brand[brandValue].item_type[itemValue].good_number
+				if (type == 'minus') {
+					if (num >= 1) {
+						this.projectArray[index].content[index2].brand[brandValue].item_type[itemValue].good_number--
+						this.$forceUpdate()
+						this.calcPrice()
+					}
+				} else if (type == 'plus') {
+					this.projectArray[index].content[index2].brand[brandValue].item_type[itemValue].good_number++
+					this.$forceUpdate()
+					this.calcPrice()
 				}
-				this.calcPrice()
 			},
-			plusOne(index, index2) {
-				this.project[index].content[index2].number++
-				this.calcPrice()
-			},
+			// 删除维修项目
 			deleteProject(index) {
 				const _this = this
 				uni.showModal({
@@ -276,61 +299,98 @@
 					success: function(res) {
 						if (res.confirm) {
 							console.log('用户点击确定');
-							_this.project.splice(index, 1)
+							_this.projectArray[index].content = ''
+							let id = _this.projectArray[index].maintenance_items_id
+							let id_index = _this.ids.indexOf(id)
+							_this.ids.splice(id_index, 1)
+							_this.$forceUpdate()
+							_this.calcPrice()
 						} else if (res.cancel) {
 							console.log('用户点击取消');
 						}
 					}
 				});
-				this.calcPrice()
 			},
+			// 计算价格
 			calcPrice() {
 				let result = 0
-				this.project.forEach((item, index) => {
-					item.content.forEach((item2, index2) => {
-						result += item2.type[item2.typeValue].price * item2.number
+				if (this.projectArray.length > 0) {
+					this.projectArray.forEach((item, index) => {
+						if (item.content && item.content.length > 0) {
+							console.log(111, 'calcPrice')
+							item.content.forEach((item2, index2) => {
+								if (item2.brand && item2.brand.length > 0) {
+									item2.brand.forEach((item3, index3) => {
+										if (item3.item_type && item3.item_type.length > 0) {
+											result += Number(item3.item_type[item3.itemValue].good_number) * Number(item3.item_type[item3.itemValue]
+												.good_price)
+											console.log('result', result)
+										}
+									})
+								}
+							})
+						}
 					})
-				})
-				this.result = result
-			},
-			handleProject(e){
-				let tmp_id = this.projectArray[Number(e.target.value)].maintenance_items_id
-				this.getProjectInfo(tmp_id,Number(e.target.value))
-			},
-			getProjectInfo(id,_index){
-				if(this.ids.indexOf(id)!==-1){
-					return false
+					this.result = result
+					console.log('this.result', this.result)
 				}
-				else{
-					this.ids.push(id)
+			},
+			// 选取维修项目
+			handleProject(e) {
+				let tmp_id = this.projectArray[Number(e.target.value)].maintenance_items_id
+				this.getProjectInfo(tmp_id, Number(e.target.value))
+			},
+			// 获取项目下的品牌以及型号数据
+			getProjectInfo(id, _index) {
+				if (this.ids.indexOf(id) !== -1) {
+					return false
 				}
 				const _this = this
 				wx.request({
 					url: 'http://qx.51zhengrui.com/wechat_api/order/get_parts_good_list',
 					data: {
-						'maintenance_items_id':id
+						'maintenance_items_id': id
 					},
 					header: {
-						'token':_this.$store.state.token,
+						'token': _this.$store.state.token,
 						'content-type': 'application/json'
 					},
 					success(res) {
 						if (res.data.code == 0) {
-							res.data.data.forEach(item=>{
-								if(item.brand&&item.brand.length>0){
-									item.brandValue = 0
-									item.brand.forEach(item2=>{
-										if(item2.item_type&&item2.item_type.length>0){
-											item2.itemValue = 0
-										}
-									})
-								}
-							})
-							_this.projectArray[_index].content = res.data.data
-							console.log('xxxuuu',_this.projectArray)
+							if (res.data.data.length > 0) {
+								_this.ids.push(id)
+								res.data.data.forEach(item => {
+									if (item.brand && item.brand.length > 0) {
+										item.brandValue = 0
+										item.brand.forEach(item2 => {
+											if (item2.item_type && item2.item_type.length > 0) {
+												item2.itemValue = 0
+												item2.item_type.forEach(item3 => {
+													item3.good_number = 0
+												})
+											}
+										})
+									}
+								})
+								_this.projectArray[_index].content = res.data.data
+								_this.$forceUpdate()
+								console.log('xxxuuu', _this.projectArray)
+							} else {
+								uni.showToast({
+									icon: 'none',
+									title: '暂无数据',
+									duration: 2000
+								});
+							}
 						}
 					}
 				})
+			},
+			getCar(str){
+				return str.substring(0,1)
+			},
+			getNumber(str){
+				return str.substring(1)
 			}
 		}
 	}
@@ -349,46 +409,31 @@
 			padding: 0 64rpx 0 54rpx;
 			box-sizing: border-box;
 			color: #FFFFFF;
-
-			.name,
-			.phone {
-				width: 263rpx;
-				height: 48rpx;
-				line-height: 48rpx;
-				box-sizing: border-box;
-				font-size: 24rpx;
-				font-family: PingFang SC;
-				font-weight: 500;
-				color: #FFFFFF
-			}
-
+			font-size: 26rpx;
+			
 			&.drak {
 				background-color: #2459A6;
-
-				.name {
-					background: none;
-				}
-
-				.phone {
-					padding: 0 17rpx;
-					background: #174587;
-					border-radius: 16rpx;
+				
+				.input-box-cell {
+					flex:1;
+					overflow: hidden;
+					padding-right: 10rpx;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					color: #FFFFFF;
 				}
 			}
 
 			&.light {
 				background-color: #E2EEFF;
-
-				.name {
-					background: none;
-					color: #2459A6;
-				}
-
-				.phone {
-					padding: 0 17rpx;
-					background: #FFFFFF;
-					border-radius: 16rpx;
-					color: #2459A6;
+				
+				.input-box-cell {
+					flex:1;
+					overflow: hidden;
+					padding-right: 10rpx;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					color: #5C8ACD;
 				}
 			}
 		}
@@ -397,13 +442,13 @@
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: space-between;
-			height: 120rpx;
 			align-items: center;
 			padding: 0 23rpx;
 			background-color: #FFFFFF;
 
 			.order-info-box {
 				display: flex;
+				height: 120rpx;
 				align-items: center;
 
 				.order-name {
@@ -448,16 +493,11 @@
 				height: 98rpx;
 			}
 
-			.hide-pick-car {
-				width: 100%;
-				height: 50rpx;
-			}
-
 			.hide-pick-type {
 				width: 100%;
-				height: 46rpx;
+				height: 66rpx;
 			}
-			
+
 			.hide-pick-project {
 				width: 100%;
 				height: 94rpx;
@@ -509,80 +549,98 @@
 						flex: 1;
 						height: 100%;
 						position: relative;
-
+						
+						.info-value-place {
+							width: 50rpx;
+							height: 50rpx;
+							background: #D33E5A;
+							border-radius: 4rpx;
+							text-align: center;
+							line-height: 50rpx;
+							font-size: 32rpx;
+							color: #FFFFFF;
+						}
+						
 						.info-value-carnumber {
-							width: 100%;
-							display: flex;
-							align-items: center;
-
-							.info-car-wrapper {
-								display: flex;
-								align-items: center;
-								flex-basis: 104rpx;
-								position: relative;
-
-								.info-car-name {
-									width: 50rpx;
-									height: 50rpx;
-									background: #D33E5A;
-									border-radius: 4rpx;
-									text-align: center;
-									line-height: 50rpx;
-									font-size: 32rpx;
-									color: #FFFFFF;
-								}
-
-								.info-car-icon {
-									width: 12rpx;
-									height: 6rpx;
-									margin-left: 10rpx;
-								}
-							}
-
-							.info-car-input {
-								width: calc(100% - 144rpx);
-								height: 100%;
-								border: none;
-								color: #1E242B;
-								font-size: 32rpx;
-								font-family: PingFang SC;
-								font-weight: 500;
-							}
-						}
-
-						.info-value-input {
-							width: calc(100% - 40rpx);
-							height: 100%;
-							border: none;
+							width: calc(100% - 50rpx);
+							margin-left: 54rpx;
 							color: #1E242B;
 							font-size: 32rpx;
-							font-family: PingFang SC;
-							font-weight: 500;
 						}
 
-						.info-value-select {
-							width: calc(100% - 40rpx);
-							color: #1E242B;
-							font-size: 32rpx;
-							font-family: PingFang SC;
-							font-weight: 500;
+						// .info-value-carnumber {
+						// 	width: 50rpx;
+						// 	display: flex;
+						// 	align-items: center;
 
-							&.no-value {
-								color: #C8C7CE;
-							}
-						}
+						// 	.info-car-wrapper {
+						// 		display: flex;
+						// 		align-items: center;
+						// 		flex-basis: 104rpx;
+						// 		position: relative;
 
-						.info-value-arrow {
-							width: 40rpx;
-							display: flex;
-							align-items: center;
-							justify-content: center;
+						// 		.info-car-name {
+						// 			width: 50rpx;
+						// 			height: 50rpx;
+						// 			background: #D33E5A;
+						// 			border-radius: 4rpx;
+						// 			text-align: center;
+						// 			line-height: 50rpx;
+						// 			font-size: 32rpx;
+						// 			color: #FFFFFF;
+						// 		}
 
-							image {
-								width: 12rpx;
-								height: 6rpx;
-							}
-						}
+						// 		.info-car-icon {
+						// 			width: 12rpx;
+						// 			height: 6rpx;
+						// 			margin-left: 10rpx;
+						// 		}
+						// 	}
+
+						// 	.info-car-input {
+						// 		width: calc(100% - 144rpx);
+						// 		height: 100%;
+						// 		border: none;
+						// 		color: #1E242B;
+						// 		font-size: 32rpx;
+						// 		font-family: PingFang SC;
+						// 		font-weight: 500;
+						// 	}
+						// }
+
+						// .info-value-input {
+						// 	width: calc(100% - 40rpx);
+						// 	height: 100%;
+						// 	border: none;
+						// 	color: #1E242B;
+						// 	font-size: 32rpx;
+						// 	font-family: PingFang SC;
+						// 	font-weight: 500;
+						// }
+
+						// .info-value-select {
+						// 	width: calc(100% - 40rpx);
+						// 	color: #1E242B;
+						// 	font-size: 32rpx;
+						// 	font-family: PingFang SC;
+						// 	font-weight: 500;
+
+						// 	&.no-value {
+						// 		color: #C8C7CE;
+						// 	}
+						// }
+
+						// .info-value-arrow {
+						// 	width: 40rpx;
+						// 	display: flex;
+						// 	align-items: center;
+						// 	justify-content: center;
+
+						// 	image {
+						// 		width: 12rpx;
+						// 		height: 6rpx;
+						// 	}
+						// }
 					}
 				}
 			}

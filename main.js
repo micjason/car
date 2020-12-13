@@ -4,7 +4,6 @@ import globalMixin from '@/static/js/global.js'
 import store from '@/store/index.js'
 
 Vue.config.productionTip = false
-require('@/static/mock/mock.js')
 
 App.mpType = 'app'
 
