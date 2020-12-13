@@ -42,7 +42,7 @@
 							{{getCar(memberInfo.vehicle_number)}}
 						</view>
 						<view class="info-value-carnumber">
-							{{getNumber(memberInfo.vehicle_number)}}
+							{{getCarNumber(memberInfo.vehicle_number)}}
 						</view>
 					</view>
 				</view>
@@ -80,32 +80,41 @@
 					</view>
 				</view>
 			</view>
-			<!-- <view class="info-box">
-				<view class="info-left"><text v-if="item.isMust" class="must">*</text></view>
+			<view class="info-box">
+				<view class="info-left"></view>
 				<view class="info-right">
 					<view class="info-name">
-						{{item.name}}
+						下次换油日期
 					</view>
-					<view class="info-value">
-						<view v-if="item.type==='carNumber'" class="info-value-carnumber">
-							<view class="info-car-wrapper">
-								<view class="info-car-name">{{}}</view>
-								<image class="info-car-icon" src="../../static/image/arrow.png"></image>
-							</view>
-							<input class="info-car-input" type="text" :placeholder="'请输入'+item.name" placeholder-style="color:#C8C7CE">
+					<view class="info-value-date-wrapper">
+						<view :class="['info-value-date',next_oil_change_time?'':'no-value']">
+							{{next_oil_change_time?next_oil_change_time:'请选择下次换油日期'}}
 						</view>
-						<input v-if="item.type==='input'" class="info-value-input" type="text" :placeholder="'请输入'+item.name"
-						 placeholder-style="color:#C8C7CE">
-						<view :class="['info-value-select',item.init?'no-value':'']">
-							
-						</view>
-						<view v-if="item.type==='select'||item.type==='time'" class="info-value-arrow">
+						<view class="info-car-icon">
 							<image src="../../static/image/arrow.png"></image>
 						</view>
-			
-						<picker class="hide-pick" v-if="item.type==='time'" mode="date" :value="item.value" :start="startDate" :end="endDate"
-						 @change="bindChange($event,index)">
-							<view class="hide-pick-text">{{item.value}}</view>
+
+						<picker class="hide-pick" mode="date" value="" :start="startDate" :end="endDate" @change="bindNextChange">
+							<view class="hide-pick-time">下次换油日期</view>
+						</picker>
+					</view>
+				</view>
+			</view>
+			<!-- <view class="info-box">
+				<view class="info-left"></view>
+				<view class="info-right">
+					<view class="info-name">
+						结清日期
+					</view>
+					<view class="info-value-date-wrapper">
+						<view :class="['info-value-date',settle_time?'':'no-value']">
+							{{settle_time?settle_time:'请选择结清日期'}}
+						</view>
+						<view class="info-car-icon"><image src="../../static/image/arrow.png"></image></view>
+						
+						<picker class="hide-pick" mode="date" value="" :start="startDate" :end="endDate"
+						 @change="bindDoneChange">
+							<view class="hide-pick-time">结清日期</view>
 						</picker>
 					</view>
 				</view>
@@ -123,7 +132,9 @@
 							<view class="project-name">{{item.maintenance_items_name}}</view>
 							<image src="../../static/image/arrow.png"></image>
 						</view>
-						<image @click="deleteProject(index)" class="project-name-delete" src="../../static/image/delete.png"></image>
+						<view class="project-name-delete" @click="deleteProject(index)">
+							<image src="../../static/image/delete.png"></image>
+						</view>
 					</view>
 					<view class="project-content" v-for="(item2,index2) in item.content" :key="index2">
 						<view class="project-left">
@@ -185,7 +196,7 @@
 					</view>
 				</view>
 			</view>
-			<view class="result-btn">提交</view>
+			<view class="result-btn" @click='doSubmit'>提交</view>
 		</view>
 	</view>
 </template>
@@ -202,16 +213,18 @@
 			},
 			endDate() {
 				return getDate('end');
-			},
+			}
 		},
 		data() {
 			return {
-				date: '',
 				result: 0,
 				projectArray: [],
 				projectIndex: 0,
-				memberInfo:{},
-				ids: []
+				memberInfo: {},
+				ids: [],
+				next_oil_change_time: '',
+				settle_time: '',
+				submit: []
 			}
 		},
 		created() {
@@ -219,12 +232,28 @@
 			this.getAllProject()
 		},
 		methods: {
+			init() {
+				this.result = 0
+				this.projectArray = []
+				this.projectIndex = 0
+				this.memberInfo = {}
+				this.ids = []
+				this.next_oil_change_time = ''
+				this.settle_time = ''
+				this.submit = []
+			},
 			bindChange(e, index) {
 				this.basicInfo[index].value = e.target.value
 				this.basicInfo[index].init = false
 			},
+			bindNextChange(e) {
+				this.next_oil_change_time = e.detail.value
+			},
+			bindDoneChange(e) {
+				this.settle_time = e.detail.value
+			},
 			// 获取基本信息
-			getBasicInfo(){
+			getBasicInfo() {
 				const _this = this
 				wx.request({
 					url: 'http://qx.51zhengrui.com/wechat_api/order/get_member_information',
@@ -275,6 +304,7 @@
 			},
 			// 增减数量
 			getNumber(type, index, index2) {
+				console.log('getNumber', type)
 				let brandValue = this.projectArray[index].content[index2].brandValue
 				let itemValue = this.projectArray[index].content[index2].brand[brandValue].itemValue
 				let num = this.projectArray[index].content[index2].brand[brandValue].item_type[itemValue].good_number
@@ -317,14 +347,12 @@
 				if (this.projectArray.length > 0) {
 					this.projectArray.forEach((item, index) => {
 						if (item.content && item.content.length > 0) {
-							console.log(111, 'calcPrice')
 							item.content.forEach((item2, index2) => {
 								if (item2.brand && item2.brand.length > 0) {
 									item2.brand.forEach((item3, index3) => {
 										if (item3.item_type && item3.item_type.length > 0) {
 											result += Number(item3.item_type[item3.itemValue].good_number) * Number(item3.item_type[item3.itemValue]
 												.good_price)
-											console.log('result', result)
 										}
 									})
 								}
@@ -386,11 +414,85 @@
 					}
 				})
 			},
-			getCar(str){
-				return str.substring(0,1)
+			getCar(str) {
+				return str.substring(0, 1)
 			},
-			getNumber(str){
+			getCarNumber(str) {
 				return str.substring(1)
+			},
+			doSubmit() {
+				const that = this
+				let time = (new Date(this.next_oil_change_time).getTime())/ 1000
+				let order_detail = []
+
+				console.log('member_id', this.memberInfo.member_id)
+				console.log('next_oil_change_time', time)
+				console.log('order_money', this.result)
+
+				if (this.projectArray.length > 0) {
+					this.projectArray.forEach((item, index) => {
+						if (item.content && item.content.length > 0) {
+							item.content.forEach((item2, index2) => {
+								if (item2.brand && item2.brand.length > 0) {
+									item2.brand.forEach((item3, index3) => {
+										if (item3.item_type && item3.item_type.length > 0) {
+											console.log(111, Number(item3.item_type[item3.itemValue].good_number))
+											if (Number(item3.item_type[item3.itemValue].good_number) > 0) {
+												let tmp_obj = {}
+												tmp_obj.maintenance_items_id = item.maintenance_items_id
+												tmp_obj.maintenance_items_name = item.maintenance_items_name
+												tmp_obj.parts_id = item2.parts_id
+												tmp_obj.parts_name = item2.parts_name
+												tmp_obj.brand_id = item3.brand_id
+												tmp_obj.brand_name = item3.brand_name
+												tmp_obj.item_type_name = item3.item_type[item3.itemValue].item_type_name
+												tmp_obj.good_id = item3.item_type[item3.itemValue].good_id
+												tmp_obj.good_price = item3.item_type[item3.itemValue].good_price
+												tmp_obj.good_number = item3.item_type[item3.itemValue].good_number
+												tmp_obj.good_all_price = Number(item3.item_type[item3.itemValue].good_price)*Number(item3.item_type[item3.itemValue].good_number)
+												order_detail.push(tmp_obj)
+											}
+										}
+									})
+								}
+							})
+						}
+					})
+				}
+
+				wx.request({
+					url: 'http://qx.51zhengrui.com/wechat_api/order/order_add',
+					data: {
+						'member_id': that.memberInfo.member_id,
+						'next_oil_change_time': time,
+						'order_money': that.result,
+						'order_detail_list': JSON.stringify(order_detail)
+					},
+					method: 'POST',
+					header: {
+						'token': that.$store.state.token,
+						'content-type': 'application/json'
+					},
+					success(res) {
+						if (res.data.code == 0) {
+							uni.showToast({
+								icon: 'none',
+								title: res.data.msg,
+								duration: 1000,
+								success: () => {
+									setTimeout(function(){
+										uni.navigateTo({
+											url: "/pages/list/list",
+											success: () => {
+												that.init()
+											}
+										})
+									},1000)
+								}
+							});
+						}
+					}
+				})
 			}
 		}
 	}
@@ -410,12 +512,12 @@
 			box-sizing: border-box;
 			color: #FFFFFF;
 			font-size: 26rpx;
-			
+
 			&.drak {
 				background-color: #2459A6;
-				
+
 				.input-box-cell {
-					flex:1;
+					flex: 1;
 					overflow: hidden;
 					padding-right: 10rpx;
 					white-space: nowrap;
@@ -426,9 +528,9 @@
 
 			&.light {
 				background-color: #E2EEFF;
-				
+
 				.input-box-cell {
-					flex:1;
+					flex: 1;
 					overflow: hidden;
 					padding-right: 10rpx;
 					white-space: nowrap;
@@ -488,7 +590,7 @@
 			opacity: 0;
 			z-index: 1;
 
-			.hide-pick-text {
+			.hide-pick-time {
 				width: 100%;
 				height: 98rpx;
 			}
@@ -549,7 +651,7 @@
 						flex: 1;
 						height: 100%;
 						position: relative;
-						
+
 						.info-value-place {
 							width: 50rpx;
 							height: 50rpx;
@@ -560,7 +662,7 @@
 							font-size: 32rpx;
 							color: #FFFFFF;
 						}
-						
+
 						.info-value-carnumber {
 							width: calc(100% - 50rpx);
 							margin-left: 54rpx;
@@ -568,80 +670,40 @@
 							font-size: 32rpx;
 						}
 
-						// .info-value-carnumber {
-						// 	width: 50rpx;
-						// 	display: flex;
-						// 	align-items: center;
-
-						// 	.info-car-wrapper {
-						// 		display: flex;
-						// 		align-items: center;
-						// 		flex-basis: 104rpx;
-						// 		position: relative;
-
-						// 		.info-car-name {
-						// 			width: 50rpx;
-						// 			height: 50rpx;
-						// 			background: #D33E5A;
-						// 			border-radius: 4rpx;
-						// 			text-align: center;
-						// 			line-height: 50rpx;
-						// 			font-size: 32rpx;
-						// 			color: #FFFFFF;
-						// 		}
-
-						// 		.info-car-icon {
-						// 			width: 12rpx;
-						// 			height: 6rpx;
-						// 			margin-left: 10rpx;
-						// 		}
-						// 	}
-
-						// 	.info-car-input {
-						// 		width: calc(100% - 144rpx);
-						// 		height: 100%;
-						// 		border: none;
-						// 		color: #1E242B;
-						// 		font-size: 32rpx;
-						// 		font-family: PingFang SC;
-						// 		font-weight: 500;
-						// 	}
-						// }
-
-						// .info-value-input {
-						// 	width: calc(100% - 40rpx);
-						// 	height: 100%;
-						// 	border: none;
-						// 	color: #1E242B;
-						// 	font-size: 32rpx;
-						// 	font-family: PingFang SC;
-						// 	font-weight: 500;
-						// }
-
-						// .info-value-select {
-						// 	width: calc(100% - 40rpx);
-						// 	color: #1E242B;
-						// 	font-size: 32rpx;
-						// 	font-family: PingFang SC;
-						// 	font-weight: 500;
-
-						// 	&.no-value {
-						// 		color: #C8C7CE;
-						// 	}
-						// }
-
-						// .info-value-arrow {
-						// 	width: 40rpx;
-						// 	display: flex;
-						// 	align-items: center;
-						// 	justify-content: center;
-
-						// 	image {
-						// 		width: 12rpx;
-						// 		height: 6rpx;
-						// 	}
-						// }
 					}
+
+					.info-value-date-wrapper {
+						flex: 1;
+						height: 100%;
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						position: relative;
+
+						.info-value-date {
+							width: calc(100% - 40rpx);
+
+							&.no-value {
+								color: #C8C7CE;
+							}
+						}
+
+						.info-car-icon {
+							width: 40rpx;
+							height: 40rpx;
+							display: flex;
+							align-items: center;
+							justify-content: center;
+
+							image {
+								width: 12rpx;
+								height: 6rpx;
+								margin-left: 10rpx;
+							}
+						}
+					}
+
+
 				}
 			}
 		}
@@ -680,9 +742,17 @@
 					}
 
 					.project-name-delete {
-						width: 20rpx;
-						height: 20rpx;
-						margin-right: 51rpx;
+						width: 50rpx;
+						height: 50rpx;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						margin-right: 26rpx;
+
+						image {
+							width: 20rpx;
+							height: 20rpx;
+						}
 					}
 				}
 

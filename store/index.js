@@ -6,7 +6,8 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
 	state: {
 		openid: '',
-		token:''
+		token:'',
+		member_id:''
 	},
 	mutations: {
 		setOpenid(state, n) {
@@ -14,6 +15,9 @@ const store = new Vuex.Store({
 		},
 		setToken(state, n) {
 			state.token = n
+		},
+		setMember(state, n) {
+			state.member_id = n
 		}
 	}
 })

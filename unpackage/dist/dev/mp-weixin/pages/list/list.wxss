@@ -5,8 +5,7 @@
   padding: 16rpx;
   border: 1rpx solid #219DFF;
   margin-bottom: 40rpx;
-  -webkit-border-radius: 10rpx;
-          border-radius: 10rpx;
+  border-radius: 10rpx;
   font-size: 28rpx;
   line-height: 50rpx;
 }

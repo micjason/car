@@ -35,8 +35,49 @@
 						price: '200',
 						time: '2020-12-11'
 					}
-				]
+				],
+				type: 1 //1：代表用户订单员 2：代表维修员订单页   
 			}
+		},
+		created() {
+			wx.request({
+				url: 'http://qx.51zhengrui.com/wechat_api/order/order_list',
+				data: {
+					limit: 10,
+					page: 1,
+					type: 1,
+					member_id: this.$store.state.member_id
+				},
+				header: {
+					'token': this.$store.state.token,
+					'content-type': 'application/json'
+				},
+				success(res) {
+
+				},
+				fail(err) {
+
+				}
+			}),
+			
+			wx.request({
+				url: 'http://qx.51zhengrui.com/wechat_api/order/order_detail',
+				data: {
+					order_no: "20201213233648123340",
+					member_id: 1,
+					type: 1
+				},
+				header: {
+					'token': this.$store.state.token,
+					'content-type': 'application/json'
+				},
+				success(res) {
+			
+				},
+				fail(err) {
+			
+				}
+			})
 		},
 		methods: {
 			jumpToDetail() {
