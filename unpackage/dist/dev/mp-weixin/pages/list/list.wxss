@@ -1,0 +1,29 @@
+.list.data-v-7d5e07c6 {
+  padding: 40rpx;
+}
+.list .list-box.data-v-7d5e07c6 {
+  padding: 16rpx;
+  border: 1rpx solid #219DFF;
+  margin-bottom: 40rpx;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  line-height: 50rpx;
+}
+.list .list-box .list-common.data-v-7d5e07c6 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+}
+.list .list-box .list-common .list-common-left.data-v-7d5e07c6 {
+  -webkit-flex-basis: 140rpx;
+          flex-basis: 140rpx;
+}
+.list .list-box .list-common .list-common-right.data-v-7d5e07c6 {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+          flex: 1;
+}
+.list .list-box .list-time.data-v-7d5e07c6 {
+  text-align: right;
+}
+

@@ -1,0 +1,16 @@
+{
+  "pages": [
+    "pages/list/list",
+    "pages/identify/identify",
+    "pages/login/login",
+    "pages/index/index"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "无锡卡友之家",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#000000"
+  },
+  "usingComponents": {}
+}

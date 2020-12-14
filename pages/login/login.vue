@@ -64,7 +64,8 @@
 						},
 						success(res) {
 							if (res.data.code == 0) {
-								_this.$store.commit('setToken', res.data.data)
+								_this.$store.commit('setToken', res.data.data.token)
+								_this.$store.commit('setMember', res.data.data.member_id)
 								uni.navigateTo({
 									url: "/pages/index/index",
 									success: () => {

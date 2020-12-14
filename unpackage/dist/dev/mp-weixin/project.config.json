@@ -1,0 +1,41 @@
+{
+  "description": "项目配置文件。",
+  "packOptions": {
+    "ignore": []
+  },
+  "setting": {
+    "urlCheck": false,
+    "es6": true,
+    "postcss": true
+  },
+  "compileType": "miniprogram",
+  "libVersion": "",
+  "appid": "wxdfce4bb8510b20e6",
+  "projectname": "car",
+  "condition": {
+    "plugin": {
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "list": []
+    },
+    "miniprogram": {
+      "list": [
+        {
+          "name": "身份",
+          "pathName": "pages/identify/identify",
+          "query": "",
+          "scene": null
+        },
+        {
+          "name": "列表",
+          "pathName": "pages/list/list",
+          "scene": null
+        }
+      ]
+    }
+  }
+}
