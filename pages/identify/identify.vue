@@ -20,7 +20,10 @@
 			}
 		},
 		created() {
-
+			let a = this.encrypt("测试")
+			console.log(a)            //g1p0wo5nh2NQZAGcAnEgyg==
+			let b = this.decrypt(a)
+			console.log(b)         
 		},
 		methods: {
 			login(type) {
@@ -42,13 +45,17 @@
 								_this.$store.commit('setMember', res.data.data.member_id)
 								uni.navigateTo({
 									url: "/pages/list/list",
-									success: () => {}
+									success: () => {
+										_this.$store.commit('setType', type)
+									}
 								})
 							}
 							else if(res.data.code == -2){
 								uni.navigateTo({
 									url: `/pages/login/login?type=${_this.identify}`,
-									success: () => {}
+									success: () => {
+										_this.$store.commit('setType', type)
+									}
 								})
 							}
 							else{
@@ -93,13 +100,17 @@
 													_this.$store.commit('setMember', res.data.data.member_id)
 													uni.navigateTo({
 														url: "/pages/list/list",
-														success: () => {}
+														success: () => {
+															_this.$store.commit('setType', type)
+														}
 													})
 												}
 												else if(res.data.code == -2){
 													uni.navigateTo({
 														url: `/pages/login/login?type=${_this.identify}`,
-														success: () => {}
+														success: () => {
+															_this.$store.commit('setType', type)
+														}
 													})
 												}
 												else{

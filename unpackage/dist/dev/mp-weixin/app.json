@@ -1,8 +1,8 @@
 {
   "pages": [
-    "pages/list/list",
     "pages/identify/identify",
     "pages/login/login",
+    "pages/list/list",
     "pages/index/index"
   ],
   "subPackages": [],

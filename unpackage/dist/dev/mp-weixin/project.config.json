@@ -13,29 +13,21 @@
   "appid": "wxdfce4bb8510b20e6",
   "projectname": "car",
   "condition": {
-    "plugin": {
+    "search": {
+      "current": -1,
+      "list": []
+    },
+    "conversation": {
+      "current": -1,
       "list": []
     },
     "game": {
-      "list": []
-    },
-    "gamePlugin": {
+      "current": -1,
       "list": []
     },
     "miniprogram": {
-      "list": [
-        {
-          "name": "身份",
-          "pathName": "pages/identify/identify",
-          "query": "",
-          "scene": null
-        },
-        {
-          "name": "列表",
-          "pathName": "pages/list/list",
-          "scene": null
-        }
-      ]
+      "current": -1,
+      "list": []
     }
   }
 }
