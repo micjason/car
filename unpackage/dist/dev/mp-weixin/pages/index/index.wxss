@@ -450,6 +450,12 @@
 }
 .content .result .result-left .result-order-wrapper.data-v-57280228 {
   margin-left: 37rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
 }
 .content .result .result-left .result-order-wrapper .result-order-price.data-v-57280228 {
   color: #FFFFFF;

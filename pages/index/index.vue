@@ -94,7 +94,7 @@
 							<image src="../../static/image/arrow.png"></image>
 						</view>
 
-						<picker :disabled="next_oil_change_time?true:false" class="hide-pick" mode="date" value="" :start="startDate"
+						<picker v-if="canWrite" :disabled="next_oil_change_time?true:false" class="hide-pick" mode="date" value="" :start="startDate"
 						 :end="endDate" @change="bindNextChange">
 							<view class="hide-pick-time">下次换油日期</view>
 						</picker>
@@ -133,7 +133,7 @@
 							<view class="project-name">{{item.maintenance_items_name}}</view>
 							<image src="../../static/image/arrow.png"></image>
 						</view>
-						<view class="project-name-delete" @click="deleteProject(index)">
+						<view v-if="canWrite" class="project-name-delete" @click="deleteProject(index)">
 							<image src="../../static/image/delete.png"></image>
 						</view>
 					</view>
@@ -145,7 +145,7 @@
 									<view>{{item2.brand[item2.brandValue].brand_name}}</view>
 									<image class="project-type-spread" src="../../static/image/down.png"></image>
 
-									<picker class="hide-pick" @change="bindBrandChange($event,index,index2)" :value="item2.brandValue" :range="item2.brand"
+									<picker v-if="canWrite" class="hide-pick" @change="bindBrandChange($event,index,index2)" :value="item2.brandValue" :range="item2.brand"
 									 range-key="brand_name">
 										<view class="hide-pick-type">{{item2.brand[item2.brandValue].brand_name}}</view>
 									</picker>
@@ -155,7 +155,7 @@
 									<view>{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].item_type_name}}</view>
 									<image class="project-type-spread" src="../../static/image/down.png"></image>
 
-									<picker class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.brand[item2.brandValue].itemValue"
+									<picker v-if="canWrite" class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.brand[item2.brandValue].itemValue"
 									 :range="item2.brand[item2.brandValue].item_type" range-key="item_type_name">
 										<view class="hide-pick-type">{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].item_type_name}}</view>
 									</picker>
@@ -167,16 +167,16 @@
 							</view>
 						</view>
 						<view class="project-right">
-							<image @click="getNumber('minus',index,index2)" class="project-right-minus" src='../../static/image/minus.png'></image>
+							<image v-if="canWrite" @click="getNumber('minus',index,index2)" class="project-right-minus" src='../../static/image/minus.png'></image>
 							<view class="project-right-number">{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_number==0?'':item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_number}}</view>
-							<image @click="getNumber('plus',index,index2)" class="project-right-plus" src='../../static/image/plus.png'></image>
+							<image v-if="canWrite" @click="getNumber('plus',index,index2)" class="project-right-plus" src='../../static/image/plus.png'></image>
 						</view>
 					</view>
 				</template>
 			</view>
 		</view>
 
-		<view class="project-add" v-if="projectArray.length>0">
+		<view class="project-add" v-if="projectArray.length>0 && canWrite">
 			<image class="project-add-icon" src='../../static/image/add.png'></image>
 			<view class="project-add-text" @click="addProject">添加维修项目</view>
 			<picker class="hide-pick" @change="handleProject" :value="projectIndex" :range="projectArray" range-key="maintenance_items_name">
@@ -214,6 +214,13 @@
 			},
 			endDate() {
 				return getDate('end');
+			},
+			canWrite(){
+				let result = true
+				if(this.order_status == 3 || this.$store.state.type == 2){
+					result = false
+				}
+				return result
 			}
 		},
 		data() {
@@ -227,7 +234,8 @@
 				settle_time: '',
 				submit: [],
 				detail: false,
-				order_no:''
+				order_no:'',
+				order_status:''
 			}
 		},
 		mounted() {
@@ -239,6 +247,7 @@
 			if (Object.keys(options).length>0) {
 				this.detail = true
 				this.order_no = options.order_no
+				this.order_status = Number(options.order_status)
 				this.getdetailInfo(options.order_no)
 			}
 		},
@@ -547,14 +556,14 @@
 			},
 			doSubmit() {
 				const that = this
-				if(!this.next_oil_change_time){
-					uni.showToast({
-						icon: 'none',
-						title: '请选择下次换油日期',
-						duration: 2000
-					});
-					return false
-				}
+				// if(!this.next_oil_change_time){
+				// 	uni.showToast({
+				// 		icon: 'none',
+				// 		title: '请选择下次换油日期',
+				// 		duration: 2000
+				// 	});
+				// 	return false
+				// }
 				if(this.result == 0){
 					uni.showToast({
 						icon: 'none',
@@ -1051,6 +1060,8 @@
 
 				.result-order-wrapper {
 					margin-left: 37rpx;
+					display: flex;
+					align-items: center;
 
 					.result-order-price {
 						color: #FFFFFF;

@@ -31,11 +31,15 @@
   -webkit-align-items: center;
           align-items: center;
   font-size: 32rpx;
-  background: #1357a1;
-  color: #FFFFFF;
+  background: #C8C7CC;
+  color: #000000;
 }
 .list .list-check .list-check-box.data-v-7d5e07c6:first-child {
   border-right: 2rpx solid #808080;
+}
+.list .list-check .list-check-box.active.data-v-7d5e07c6 {
+  background: #1357a1;
+  color: #FFFFFF;
 }
 .list .list-main.data-v-7d5e07c6 {
   -webkit-box-flex: 1;

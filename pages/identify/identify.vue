@@ -20,10 +20,7 @@
 			}
 		},
 		created() {
-			let a = this.encrypt("测试")
-			console.log(a)            //g1p0wo5nh2NQZAGcAnEgyg==
-			let b = this.decrypt(a)
-			console.log(b)         
+			    
 		},
 		methods: {
 			login(type) {
@@ -61,13 +58,17 @@
 							else{
 								uni.showToast({
 									icon:'none',
-									title: res.data.msg,
+									title: res.data.msg||'服务器异常',
 									duration: 2000
 								});
 							}
 						},
 						fail() {
-							
+							uni.showToast({
+								icon:'none',
+								title: '服务器异常',
+								duration: 2000
+							});
 						}
 					})
 				} else {
@@ -131,15 +132,7 @@
 						}
 					});
 				}
-			},
-			test() {
-				return new Promise((resolve, reject) => {
-					setTimeout(res => {
-						console.log('3秒')
-						reject('haha')
-					}, 3000)
-				})
-			},
+			}
 		}
 	}
 </script>

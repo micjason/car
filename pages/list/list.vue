@@ -1,8 +1,8 @@
 <template>
 	<view class="list">
 		<view class="list-check" v-if="type==2">
-			<view class="list-check-box">全部订单</view>
-			<view class="list-check-box">未完成</view>
+			<view :class="['list-check-box',active==1?'active':'']" @click="getAll">全部订单</view>
+			<view :class="['list-check-box',active==2?'active':'']" @click="getNoDone">未完成</view>
 		</view>
 
 		<view class="list-main">
@@ -14,15 +14,15 @@
 			<view class="list-box" v-if="listData&&listData.length>0">
 				<scroll-view scroll-y="true" enable-flex="true" class="scroll-wrapper" @scrolltolower="getNext">
 					<div class="list-scroll-content">
-						<div class="list-scroll-box" v-for="(item,index) in listData" :key="index" @click="jumpToDetail(item.order_no)">
+						<div class="list-scroll-box" v-for="(item,index) in listData" :key="index" @click="jumpToDetail(item.order_no,item.order_status)">
 							<view class="list-order-no">订单号：{{item.order_no}}</view>
-							<view class="list-order-time">订单时间：{{item.order_add_time}}</view> <view class="list-member-name">车主姓名：{{item.member_name}}</view>
+							<view class="list-order-time">订单时间：{{item.order_add_time}}</view>
+							<view class="list-member-name">车主姓名：{{item.member_name}}</view>
 							<view class="list-next-oil">下次换油日期：{{item.next_oil_change_time}}</view>
 							<view class="list-box-btn">
 								<view class="list-order-time">订单状态：{{item.order_status==1?'待分配':item.order_status==2?'已分配':item.order_status==3?'已支付':''}}</view>
 								<view class="list-pay" v-if="item.order_status==2 && type==1">支付</view>
 							</view>
-
 						</div>
 					</div>
 				</scroll-view>
@@ -39,6 +39,7 @@
 	export default {
 		data() {
 			return {
+				active:1,
 				listData: null,
 				limit: 5,
 				pageIndex: 1,
@@ -57,29 +58,32 @@
 			this.getListData()
 		},
 		methods: {
-			jumpToDetail(id) {
-				console.log('id',id)
+			jumpToDetail(id,status) {
+				console.log('id', id)
 				let url = ''
-				if(id){
-					url=`/pages/index/index?order_no=${id}`
-				}
-				else{
-					url= "/pages/index/index"
+				if (id) {
+					url = `/pages/index/index?order_no=${id}&status=${status}`
+				} else {
+					url = "/pages/index/index"
 				}
 				uni.navigateTo({
 					url
 				})
 			},
-			getListData() {
+			getListData(status) {
 				const that = this
+				let post_data = {
+					'limit': that.limit,
+					'page': that.pageIndex,
+					'type': that.$store.state.type,
+					'member_id': that.$store.state.member_id
+				}
+				if (status == 'no') {
+					post_data.order_status = 2
+				}
 				wx.request({
 					url: 'http://qx.51zhengrui.com/wechat_api/order/order_list',
-					data: {
-						limit: that.limit,
-						page: that.pageIndex,
-						type: that.$store.state.type,
-						member_id: that.$store.state.member_id
-					},
+					data: post_data,
 					header: {
 						'token': this.$store.state.token,
 						'content-type': 'application/json'
@@ -87,16 +91,13 @@
 					success(res) {
 						if (res.data.code === 0) {
 							that.total = res.data.data.count
-							if (that.listData) {
+							if (that.listData&&that.listData.length>0) {
 								that.listData = [...that.listData, ...res.data.data.order_list]
 							} else {
-								that.listData = []
+								that.listData = res.data.data.order_list || []
 							}
 						}
 					},
-					fail(err) {
-
-					}
 				})
 			},
 			getNext() {
@@ -106,7 +107,18 @@
 					return false
 				}
 				this.getListData()
-				console.log(11, this.pageIndex, this.maxIndex)
+			},
+			getAll() {
+				this.active = 1
+				this.pageIndex = 0
+				this.listData = null
+				this.getListData()
+			},
+			getNoDone() {
+				this.active = 2
+				this.pageIndex = 0
+				this.listData = null
+				this.getListData('no')
 			}
 		}
 	}
@@ -130,11 +142,16 @@
 				justify-content: center;
 				align-items: center;
 				font-size: 32rpx;
-				background: #1357a1;
-				color: #FFFFFF;
-
+				background: #C8C7CC;
+				color: #000000;
+				
 				&:first-child {
 					border-right: 2rpx solid #808080;
+				}
+
+				&.active {
+					background: #1357a1;
+					color: #FFFFFF;
 				}
 			}
 		}
