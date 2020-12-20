@@ -12,6 +12,8 @@
   "libVersion": "",
   "appid": "wxdfce4bb8510b20e6",
   "projectname": "car",
+  "simulatorType": "wechat",
+  "simulatorPluginLibVersion": {},
   "condition": {
     "plugin": {
       "list": []
