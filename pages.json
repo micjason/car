@@ -1,14 +1,6 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		{
-			"path": "pages/list/list",
-			"style": {
-				"navigationBarTitleText": "无锡卡友之家",
-				"enablePullDownRefresh": false
-			}
-		
-		},
-		{
 			"path": "pages/identify/identify",
 			"style": {
 				"navigationBarTitleText": "无锡卡友之家",
@@ -22,6 +14,14 @@
 				"navigationBarTitleText": "登录",
 				"enablePullDownRefresh": false
 			}
+		},
+		{
+			"path": "pages/list/list",
+			"style": {
+				"navigationBarTitleText": "无锡卡友之家",
+				"enablePullDownRefresh": false
+			}
+		
 		},
 		{
 			"path": "pages/index/index",

@@ -67,7 +67,7 @@
 								_this.$store.commit('setToken', res.data.data.token)
 								_this.$store.commit('setMember', res.data.data.member_id)
 								uni.navigateTo({
-									url: "/pages/index/index",
+									url: "/pages/list/list",
 									success: () => {
 										_this.phone = ''
 										_this.phoneError = false

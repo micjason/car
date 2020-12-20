@@ -14,7 +14,8 @@
   -webkit-justify-content: space-between;
           justify-content: space-between;
   padding: 0 64rpx 0 54rpx;
-  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
   color: #FFFFFF;
   font-size: 26rpx;
 }
@@ -188,7 +189,8 @@
   width: 50rpx;
   height: 50rpx;
   background: #D33E5A;
-  border-radius: 4rpx;
+  -webkit-border-radius: 4rpx;
+          border-radius: 4rpx;
   text-align: center;
   line-height: 50rpx;
   font-size: 32rpx;
@@ -343,7 +345,8 @@
   color: #868590;
   line-height: 46rpx;
   background: #F5F5F8;
-  border-radius: 8px;
+  -webkit-border-radius: 8px;
+          border-radius: 8px;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -387,7 +390,8 @@
   font-weight: 500;
   color: #111111;
   line-height: 46rpx;
-  margin: 0 17rpx;
+  min-width: 48rpx;
+  text-align: center;
 }
 .content .maintain-info .project-wrapper .project-content .project-right .project-right-plus.data-v-57280228 {
   width: 44rpx;
@@ -446,6 +450,12 @@
 }
 .content .result .result-left .result-order-wrapper.data-v-57280228 {
   margin-left: 37rpx;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+          align-items: center;
 }
 .content .result .result-left .result-order-wrapper .result-order-price.data-v-57280228 {
   color: #FFFFFF;

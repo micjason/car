@@ -90,11 +90,12 @@
 						<view :class="['info-value-date',next_oil_change_time?'':'no-value']">
 							{{next_oil_change_time?next_oil_change_time:'请选择下次换油日期'}}
 						</view>
-						<view class="info-car-icon">
+						<view class="info-car-icon" v-if="!detail">
 							<image src="../../static/image/arrow.png"></image>
 						</view>
 
-						<picker class="hide-pick" mode="date" value="" :start="startDate" :end="endDate" @change="bindNextChange">
+						<picker v-if="canWrite" :disabled="next_oil_change_time?true:false" class="hide-pick" mode="date" value="" :start="startDate"
+						 :end="endDate" @change="bindNextChange">
 							<view class="hide-pick-time">下次换油日期</view>
 						</picker>
 					</view>
@@ -132,7 +133,7 @@
 							<view class="project-name">{{item.maintenance_items_name}}</view>
 							<image src="../../static/image/arrow.png"></image>
 						</view>
-						<view class="project-name-delete" @click="deleteProject(index)">
+						<view v-if="canWrite" class="project-name-delete" @click="deleteProject(index)">
 							<image src="../../static/image/delete.png"></image>
 						</view>
 					</view>
@@ -144,7 +145,7 @@
 									<view>{{item2.brand[item2.brandValue].brand_name}}</view>
 									<image class="project-type-spread" src="../../static/image/down.png"></image>
 
-									<picker class="hide-pick" @change="bindBrandChange($event,index,index2)" :value="item2.brandValue" :range="item2.brand"
+									<picker v-if="canWrite" class="hide-pick" @change="bindBrandChange($event,index,index2)" :value="item2.brandValue" :range="item2.brand"
 									 range-key="brand_name">
 										<view class="hide-pick-type">{{item2.brand[item2.brandValue].brand_name}}</view>
 									</picker>
@@ -154,7 +155,7 @@
 									<view>{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].item_type_name}}</view>
 									<image class="project-type-spread" src="../../static/image/down.png"></image>
 
-									<picker class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.brand[item2.brandValue].itemValue"
+									<picker v-if="canWrite" class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.brand[item2.brandValue].itemValue"
 									 :range="item2.brand[item2.brandValue].item_type" range-key="item_type_name">
 										<view class="hide-pick-type">{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].item_type_name}}</view>
 									</picker>
@@ -166,16 +167,16 @@
 							</view>
 						</view>
 						<view class="project-right">
-							<image @click="getNumber('minus',index,index2)" class="project-right-minus" src='../../static/image/minus.png'></image>
+							<image v-if="canWrite" @click="getNumber('minus',index,index2)" class="project-right-minus" src='../../static/image/minus.png'></image>
 							<view class="project-right-number">{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_number==0?'':item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_number}}</view>
-							<image @click="getNumber('plus',index,index2)" class="project-right-plus" src='../../static/image/plus.png'></image>
+							<image v-if="canWrite" @click="getNumber('plus',index,index2)" class="project-right-plus" src='../../static/image/plus.png'></image>
 						</view>
 					</view>
 				</template>
 			</view>
 		</view>
 
-		<view class="project-add" v-if="projectArray.length>0">
+		<view class="project-add" v-if="projectArray.length>0 && canWrite">
 			<image class="project-add-icon" src='../../static/image/add.png'></image>
 			<view class="project-add-text" @click="addProject">添加维修项目</view>
 			<picker class="hide-pick" @change="handleProject" :value="projectIndex" :range="projectArray" range-key="maintenance_items_name">
@@ -191,9 +192,9 @@
 						<text class="result-order-price-icon">￥</text>
 						<text class="result-order-price-text">{{result}}</text>
 					</view>
-					<view class="result-order-pay">
+					<!-- <view class="result-order-pay">
 						另需人工费¥100
-					</view>
+					</view> -->
 				</view>
 			</view>
 			<view class="result-btn" @click='doSubmit'>提交</view>
@@ -213,6 +214,13 @@
 			},
 			endDate() {
 				return getDate('end');
+			},
+			canWrite(){
+				let result = true
+				if(this.order_status == 3 || this.$store.state.type == 2){
+					result = false
+				}
+				return result
 			}
 		},
 		data() {
@@ -224,12 +232,24 @@
 				ids: [],
 				next_oil_change_time: '',
 				settle_time: '',
-				submit: []
+				submit: [],
+				detail: false,
+				order_no:'',
+				order_status:''
 			}
 		},
-		created() {
+		mounted() {
 			this.getBasicInfo()
 			this.getAllProject()
+		},
+		onLoad(options) {
+			console.log(12312312312, options)
+			if (Object.keys(options).length>0) {
+				this.detail = true
+				this.order_no = options.order_no
+				this.order_status = Number(options.order_status)
+				this.getdetailInfo(options.order_no)
+			}
 		},
 		methods: {
 			init() {
@@ -241,10 +261,6 @@
 				this.next_oil_change_time = ''
 				this.settle_time = ''
 				this.submit = []
-			},
-			bindChange(e, index) {
-				this.basicInfo[index].value = e.target.value
-				this.basicInfo[index].init = false
 			},
 			bindNextChange(e) {
 				this.next_oil_change_time = e.detail.value
@@ -291,14 +307,34 @@
 			},
 			// 商品下拉
 			bindBrandChange(e, index, index2) {
+				if(this.projectArray[index].content[index2].brandValue == Number(e.detail.value)){
+					return false
+				}
 				this.projectArray[index].content[index2].brandValue = Number(e.detail.value)
+				
+				this.projectArray[index].content[index2].brand.forEach(item=>{
+					if(item.item_type&&item.item_type.length>0){
+						item.item_type.forEach(item2=>{
+							item2.good_number=0
+						})
+					}
+				})
 				this.$forceUpdate()
 				this.calcPrice()
 			},
 			// 型号下拉
 			bindTypeChange(e, index, index2) {
 				let brandValue = this.projectArray[index].content[index2].brandValue
+				if(this.projectArray[index].content[index2].brand[brandValue].itemValue == Number(e.detail.value)){
+					return false
+				}
+				
 				this.projectArray[index].content[index2].brand[brandValue].itemValue = Number(e.detail.value)
+				
+				this.projectArray[index].content[index2].brand[brandValue].item_type.forEach(item=>{
+					item.good_number = 0
+				})
+				
 				this.$forceUpdate()
 				this.calcPrice()
 			},
@@ -371,6 +407,11 @@
 			// 获取项目下的品牌以及型号数据
 			getProjectInfo(id, _index) {
 				if (this.ids.indexOf(id) !== -1) {
+					uni.showToast({
+						icon: 'none',
+						title: '请勿重复选择',
+						duration: 2000
+					});
 					return false
 				}
 				const _this = this
@@ -420,9 +461,124 @@
 			getCarNumber(str) {
 				return str.substring(1)
 			},
+			// 获取订单详情信息
+			getdetailInfo(id) {
+				const _this = this
+				wx.request({
+					url: 'http://qx.51zhengrui.com/wechat_api/order/order_detail',
+					data: {
+						order_no: id,
+						member_id: _this.$store.state.member_id,
+						type: _this.$store.state.type
+					},
+					header: {
+						'token': _this.$store.state.token,
+						'content-type': 'application/json'
+					},
+					success(res1) {
+						console.log('detail', res1.data.data)
+						if (res1.data.code == 0) {
+							_this.next_oil_change_time = res1.data.data.next_oil_change_time
+							_this.result = res1.data.data.order_money
+
+							if (res1.data.data.order && res1.data.data.order.length > 0) {
+								res1.data.data.order.forEach(order_item => {
+									wx.request({
+										url: 'http://qx.51zhengrui.com/wechat_api/order/get_parts_good_list',
+										data: {
+											'maintenance_items_id': order_item.maintenance_items_id
+										},
+										header: {
+											'token': _this.$store.state.token,
+											'content-type': 'application/json'
+										},
+										success(res2) {
+											if (res2.data.data.length > 0) {
+												_this.ids.push(order_item.maintenance_items_id)
+
+												res2.data.data.forEach(item => {
+													if (item.brand && item.brand.length > 0) {
+														item.brandValue = 0
+														item.brand_ids = []
+														item.brand.forEach(item2 => {
+															item.brand_ids.push(item2.brand_id)
+															if (item2.item_type && item2.item_type.length > 0) {
+																item2.itemValue = 0
+																item2.item_ids = []
+																item2.item_type.forEach(item3 => {
+																	item2.item_ids.push(item3.item_type_id)
+																	item3.good_number = 0
+																})
+															}
+														})
+													}
+												})
+												
+												
+												if(order_item.good&&order_item.good.length>0){
+													order_item.good.forEach(good_item=>{
+														res2.data.data.forEach(x=>{
+															if(good_item.parts_id==x.parts_id){
+																x.brandValue = x.brand_ids.indexOf(good_item.brand_id)
+																
+																x.brand.forEach(y=>{
+																	if(good_item.brand_id==y.brand_id){
+																		y.itemValue = y.item_ids.indexOf(good_item.item_type_id)
+																		
+																		y.item_type.forEach(z=>{
+																			if(good_item.good_id==z.good_id){
+																				z.good_number = good_item.good_number
+																			}
+																		})
+																	}
+																})
+															}
+														})
+													})
+												}
+												
+												let project_ids = []
+												_this.projectArray.forEach(pro_item => {
+													project_ids.push(pro_item.maintenance_items_id)
+												})
+												let order_item_index = project_ids.indexOf(order_item.maintenance_items_id)
+												_this.projectArray[order_item_index].content = res2.data.data
+												
+												_this.$forceUpdate()
+											}
+										}
+									})
+								})
+							}
+						}
+					}
+				})
+			},
 			doSubmit() {
 				const that = this
-				let time = (new Date(this.next_oil_change_time).getTime())/ 1000
+				// if(!this.next_oil_change_time){
+				// 	uni.showToast({
+				// 		icon: 'none',
+				// 		title: '请选择下次换油日期',
+				// 		duration: 2000
+				// 	});
+				// 	return false
+				// }
+				if(this.result == 0){
+					uni.showToast({
+						icon: 'none',
+						title: '请选择维修项目',
+						duration: 2000
+					});
+					return false
+				}
+				
+				uni.showLoading({
+				    title: '提交中',
+					mask:true
+				});
+				
+				let time = (new Date(this.next_oil_change_time).getTime()) / 1000
 				let order_detail = []
 
 				console.log('member_id', this.memberInfo.member_id)
@@ -449,7 +605,8 @@
 												tmp_obj.good_id = item3.item_type[item3.itemValue].good_id
 												tmp_obj.good_price = item3.item_type[item3.itemValue].good_price
 												tmp_obj.good_number = item3.item_type[item3.itemValue].good_number
-												tmp_obj.good_all_price = Number(item3.item_type[item3.itemValue].good_price)*Number(item3.item_type[item3.itemValue].good_number)
+												tmp_obj.good_all_price = Number(item3.item_type[item3.itemValue].good_price) * Number(item3.item_type[
+													item3.itemValue].good_number)
 												order_detail.push(tmp_obj)
 											}
 										}
@@ -460,14 +617,24 @@
 					})
 				}
 
+				let post_url=''
+				let post_data = {}
+				if(!this.detail){
+					post_url = 'http://qx.51zhengrui.com/wechat_api/order/order_add',
+					post_data.member_id = that.memberInfo.member_id
+					post_data.next_oil_change_time = time
+					post_data.order_money = that.result
+					post_data.order_detail_list = JSON.stringify(order_detail)
+				}else{
+					post_url = 'http://qx.51zhengrui.com/wechat_api/order/order_edit',
+					post_data.order_no = that.order_no
+					post_data.next_oil_change_time = time
+					post_data.order_money = that.result
+					post_data.order_detail_list = JSON.stringify(order_detail)
+				}
 				wx.request({
-					url: 'http://qx.51zhengrui.com/wechat_api/order/order_add',
-					data: {
-						'member_id': that.memberInfo.member_id,
-						'next_oil_change_time': time,
-						'order_money': that.result,
-						'order_detail_list': JSON.stringify(order_detail)
-					},
+					url: post_url,
+					data:post_data,
 					method: 'POST',
 					header: {
 						'token': that.$store.state.token,
@@ -479,18 +646,23 @@
 								icon: 'none',
 								title: res.data.msg,
 								duration: 1000,
+								mask:true,
 								success: () => {
-									setTimeout(function(){
-										uni.navigateTo({
+									setTimeout(function() {
+										uni.redirectTo({
 											url: "/pages/list/list",
 											success: () => {
+												uni.hideLoading();
 												that.init()
 											}
 										})
-									},1000)
+									}, 1000)
 								}
 							});
 						}
+					},
+					complete(){
+						
 					}
 				})
 			}
@@ -830,7 +1002,8 @@
 							font-weight: 500;
 							color: #111111;
 							line-height: 46rpx;
-							margin: 0 17rpx;
+							min-width: 48rpx;
+							text-align: center;
 						}
 
 						.project-right-plus {
@@ -887,6 +1060,8 @@
 
 				.result-order-wrapper {
 					margin-left: 37rpx;
+					display: flex;
+					align-items: center;
 
 					.result-order-price {
 						color: #FFFFFF;

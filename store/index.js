@@ -7,7 +7,8 @@ const store = new Vuex.Store({
 	state: {
 		openid: '',
 		token:'',
-		member_id:''
+		member_id:'',
+		type:''
 	},
 	mutations: {
 		setOpenid(state, n) {
@@ -18,6 +19,9 @@ const store = new Vuex.Store({
 		},
 		setMember(state, n) {
 			state.member_id = n
+		},
+		setType(state, n) {
+			state.type = n
 		}
 	}
 })

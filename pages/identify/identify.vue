@@ -20,7 +20,7 @@
 			}
 		},
 		created() {
-
+			    
 		},
 		methods: {
 			login(type) {
@@ -42,25 +42,33 @@
 								_this.$store.commit('setMember', res.data.data.member_id)
 								uni.navigateTo({
 									url: "/pages/list/list",
-									success: () => {}
+									success: () => {
+										_this.$store.commit('setType', type)
+									}
 								})
 							}
 							else if(res.data.code == -2){
 								uni.navigateTo({
 									url: `/pages/login/login?type=${_this.identify}`,
-									success: () => {}
+									success: () => {
+										_this.$store.commit('setType', type)
+									}
 								})
 							}
 							else{
 								uni.showToast({
 									icon:'none',
-									title: res.data.msg,
+									title: res.data.msg||'服务器异常',
 									duration: 2000
 								});
 							}
 						},
 						fail() {
-							
+							uni.showToast({
+								icon:'none',
+								title: '服务器异常',
+								duration: 2000
+							});
 						}
 					})
 				} else {
@@ -93,13 +101,17 @@
 													_this.$store.commit('setMember', res.data.data.member_id)
 													uni.navigateTo({
 														url: "/pages/list/list",
-														success: () => {}
+														success: () => {
+															_this.$store.commit('setType', type)
+														}
 													})
 												}
 												else if(res.data.code == -2){
 													uni.navigateTo({
 														url: `/pages/login/login?type=${_this.identify}`,
-														success: () => {}
+														success: () => {
+															_this.$store.commit('setType', type)
+														}
 													})
 												}
 												else{
@@ -120,15 +132,7 @@
 						}
 					});
 				}
-			},
-			test() {
-				return new Promise((resolve, reject) => {
-					setTimeout(res => {
-						console.log('3秒')
-						reject('haha')
-					}, 3000)
-				})
-			},
+			}
 		}
 	}
 </script>
