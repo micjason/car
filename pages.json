@@ -6,7 +6,7 @@
 				"navigationBarTitleText": "无锡卡友之家",
 				"enablePullDownRefresh": false
 			}
-		
+
 		},
 		{
 			"path": "pages/login/login",
@@ -21,7 +21,7 @@
 				"navigationBarTitleText": "无锡卡友之家",
 				"enablePullDownRefresh": false
 			}
-		
+
 		},
 		{
 			"path": "pages/index/index",

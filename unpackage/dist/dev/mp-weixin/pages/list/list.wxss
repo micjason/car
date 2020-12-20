@@ -9,6 +9,18 @@
   -webkit-flex-direction: column;
           flex-direction: column;
 }
+.list .swiper.data-v-7d5e07c6 {
+  width: 100%;
+  height: 300rpx;
+}
+.list .swiper .swiper-item.data-v-7d5e07c6 {
+  width: 100%;
+  height: 300rpx;
+}
+.list .swiper .swiper-item image.data-v-7d5e07c6 {
+  width: 100%;
+  height: 100%;
+}
 .list .list-check.data-v-7d5e07c6 {
   display: -webkit-box;
   display: -webkit-flex;
@@ -68,7 +80,11 @@
   position: relative;
   line-height: 80rpx;
   margin-bottom: 20rpx;
+  color: #4CD964;
   border-bottom: 1rpx solid #d9d6dd;
+}
+.list .list-main .list-box .scroll-wrapper .list-scroll-content .list-scroll-box .list-order-no.carry.data-v-7d5e07c6 {
+  color: #DD524D;
 }
 .list .list-main .list-box .scroll-wrapper .list-scroll-content .list-scroll-box .list-order-no.data-v-7d5e07c6::before {
   display: block;
@@ -79,6 +95,9 @@
   position: absolute;
   left: -20rpx;
   top: 18rpx;
+}
+.list .list-main .list-box .scroll-wrapper .list-scroll-content .list-scroll-box .list-order-no .list-order-no-num.data-v-7d5e07c6 {
+  color: #000000;
 }
 .list .list-main .list-box .scroll-wrapper .list-scroll-content .list-scroll-box .list-order-time.data-v-7d5e07c6,
 .list .list-main .list-box .scroll-wrapper .list-scroll-content .list-scroll-box .list-member-name.data-v-7d5e07c6 {
@@ -108,8 +127,7 @@
   height: 60rpx;
   text-align: center;
   line-height: 60rpx;
-  -webkit-border-radius: 30rpx;
-          border-radius: 30rpx;
+  border-radius: 30rpx;
   background-color: #007AFF;
   color: #FFFFFF;
 }

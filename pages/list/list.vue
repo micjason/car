@@ -1,5 +1,13 @@
 <template>
 	<view class="list">
+		<swiper class="swiper" :indicator-dots="indicatorDots" :autoplay="autoplay" :interval="interval" :duration="duration"
+		 v-if="imageList.length>0">
+			<swiper-item v-for="(item,index) in imageList" :key="index">
+				<view class="swiper-item">
+					<image :src="item.rotation_chart_url"></image>
+				</view>
+			</swiper-item>
+		</swiper>
 		<view class="list-check" v-if="type==2">
 			<view :class="['list-check-box',active==1?'active':'']" @click="getAll">全部订单</view>
 			<view :class="['list-check-box',active==2?'active':'']" @click="getNoDone">未完成</view>
@@ -15,7 +23,9 @@
 				<scroll-view scroll-y="true" enable-flex="true" class="scroll-wrapper" @scrolltolower="getNext">
 					<div class="list-scroll-content">
 						<div class="list-scroll-box" v-for="(item,index) in listData" :key="index" @click="jumpToDetail(item.order_no,item.order_status)">
-							<view class="list-order-no">订单号：{{item.order_no}}</view>
+							<view :class="['list-order-no',item.order_type==1?'':'carry']">{{item.order_type==1?'预约单号':'承接单号'}}：
+							<text class="list-order-no-num">{{item.order_no}}</text>
+							</view>
 							<view class="list-order-time">订单时间：{{item.order_add_time}}</view>
 							<view class="list-member-name">车主姓名：{{item.member_name}}</view>
 							<view class="list-next-oil">下次换油日期：{{item.next_oil_change_time}}</view>
@@ -36,14 +46,20 @@
 </template>
 
 <script>
+	import apiUrl from '@/static/js/api.js'
 	export default {
 		data() {
 			return {
-				active:1,
+				active: 1,
 				listData: null,
 				limit: 5,
 				pageIndex: 1,
-				total: 0
+				total: 0,
+				indicatorDots: true,
+				autoplay: true,
+				interval: 2000,
+				duration: 500,
+				imageList: []
 			}
 		},
 		computed: {
@@ -55,10 +71,11 @@
 			}
 		},
 		mounted() {
+			this.getImageList()
 			this.getListData()
 		},
 		methods: {
-			jumpToDetail(id,status) {
+			jumpToDetail(id, status) {
 				console.log('id', id)
 				let url = ''
 				if (id) {
@@ -81,23 +98,15 @@
 				if (status == 'no') {
 					post_data.order_status = 2
 				}
-				wx.request({
-					url: 'http://qx.51zhengrui.com/wechat_api/order/order_list',
-					data: post_data,
-					header: {
-						'token': this.$store.state.token,
-						'content-type': 'application/json'
-					},
-					success(res) {
-						if (res.data.code === 0) {
-							that.total = res.data.data.count
-							if (that.listData&&that.listData.length>0) {
-								that.listData = [...that.listData, ...res.data.data.order_list]
-							} else {
-								that.listData = res.data.data.order_list || []
-							}
+				this.$http('/wechat_api/order/order_list', post_data).then(res => {
+					if (res.data.code === 0) {
+						that.total = res.data.data.count
+						if (that.listData && that.listData.length > 0) {
+							that.listData = [...that.listData, ...res.data.data.order_list]
+						} else {
+							that.listData = res.data.data.order_list || []
 						}
-					},
+					}
 				})
 			},
 			getNext() {
@@ -119,6 +128,20 @@
 				this.pageIndex = 0
 				this.listData = null
 				this.getListData('no')
+			},
+			getImageList() {
+				const _this = this
+				this.$http('/wechat_api/login/get_rotation_chart_list', {}).then(res => {
+					console.log('lunbo', res)
+					if (res.data.code === 0) {
+						if (res.data.data && res.data.data.length > 0) {
+							res.data.data.forEach(item => {
+								item.rotation_chart_url = apiUrl + item.rotation_chart_url
+							})
+						}
+						_this.imageList = res.data.data
+					}
+				})
 			}
 		}
 	}
@@ -130,6 +153,21 @@
 		height: 100vh;
 		display: flex;
 		flex-direction: column;
+
+		.swiper {
+			width: 100%;
+			height: 300rpx;
+
+			.swiper-item {
+				width: 100%;
+				height: 300rpx;
+
+				image {
+					width: 100%;
+					height: 100%;
+				}
+			}
+		}
 
 		.list-check {
 			display: flex;
@@ -144,7 +182,7 @@
 				font-size: 32rpx;
 				background: #C8C7CC;
 				color: #000000;
-				
+
 				&:first-child {
 					border-right: 2rpx solid #808080;
 				}
@@ -181,8 +219,13 @@
 								position: relative;
 								line-height: 80rpx;
 								margin-bottom: 20rpx;
+								color: #4CD964;
 								border-bottom: 1rpx solid #d9d6dd;
-
+								
+								&.carry {
+									color: #DD524D;
+								}
+								
 								&::before {
 									display: block;
 									content: '';
@@ -192,6 +235,10 @@
 									position: absolute;
 									left: -20rpx;
 									top: 18rpx;
+								}
+								
+								.list-order-no-num {
+									color: #000000;
 								}
 							}
 
