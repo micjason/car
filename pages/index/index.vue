@@ -65,7 +65,7 @@
 						里程
 					</view>
 					<view class="info-value">
-						<input type="text" :disabled="canWrite?false:true" :value="maintenance_mileage_number" placeholder="请输入里程">
+						<input type="text" :disabled="canWrite?false:true" @input="getMile" :value="maintenance_mileage_number" placeholder="请输入里程">
 					</view>
 				</view>
 			</view>
@@ -147,7 +147,7 @@
 				</view>
 				<view class="info-picture-right">
 					<view class="location-info">{{location}}</view>
-					<view v-if="canWrite" class="location-icon" @click="openMap">
+					<view class="location-icon" @click="openMap">
 						<image src="../../static/image/location.png"></image>
 					</view>
 				</view>
@@ -159,11 +159,11 @@
 				<view class="info-picture-right">
 					<view class="info-picture-box" v-for="(item,index) in order_img" :key="index" @click='getPreview(index)'>
 						<image class="info-picture-cell" :src="item"></image>
-						<view class="picture-delete" @click.stop="deleteImage($event,index)">
+						<view v-if='canWrite' class="picture-delete" @click.stop="deleteImage($event,index)">
 							<image src="../../static/image/delete-image.png"></image>
 						</view>
 					</view>
-					<view class="info-picture-box" @click="chooseImage">
+					<view v-if='canWrite' class="info-picture-box" @click="chooseImage">
 						<image class="info-picture-add" src="../../static/image/camer.png"></image>
 					</view>
 				</view>
@@ -241,8 +241,8 @@
 					</view>
 				</view>
 			</view>
-			<view class="result-btn" @click='doSubmit' v-if="type==1&&order_status!=3">提交</view>
-			<view class="result-btn" @click='docomplete' v-if="type==2&&order_status==2">订单完成</view>
+			<view class="result-btn" @click.stop='doSubmit($event)' v-if="type==1&&order_status!=3">提交</view>
+			<view class="result-btn" @click.stop='docomplete($event)' v-if="type==2&&order_status==2">订单完成</view>
 		</view>
 	</view>
 </template>
@@ -323,9 +323,13 @@
 			});
 		},
 		methods: {
+			getMile(e){
+				console.log(123,e)
+				this.maintenance_mileage_number = e.detail.value
+			},
 			chooseImage() {
-				const that = this
-				if (that.order_img.length >= 6) {
+				const _this = this
+				if (_this.order_img.length >= 6) {
 					uni.showToast({
 						icon: 'none',
 						title: '最多上传6张图片',
@@ -341,7 +345,7 @@
 						console.log('图', res.tempFilePaths, 1123, JSON.stringify(res.tempFilePaths));
 						if (res.tempFilePaths) {
 							let tmp_length = res.tempFilePaths.length
-							if (that.order_img.length + tmp_length > 6) {
+							if (_this.order_img.length + tmp_length > 6) {
 								uni.showToast({
 									icon: 'none',
 									title: '最多上传6张图片',
@@ -357,7 +361,7 @@
 									url: apiUrl + '/wechat_api/base/upload', //仅为示例，非真实的接口地址
 									filePath: item,
 									header: {
-										'token': that.$store.state.token,
+										'token': _this.$store.state.token,
 									},
 									name: 'file',
 									formData: {
@@ -367,8 +371,8 @@
 										console.log('xubu', JSON.parse(uploadFileRes.data).data);
 										let tmp_url = apiUrl + JSON.parse(uploadFileRes.data).data
 										let tmp_url_o = JSON.parse(uploadFileRes.data).data
-										that.order_img.push(tmp_url)
-										that.order_origin_img.push(tmp_url_o)
+										_this.order_img.push(tmp_url)
+										_this.order_origin_img.push(tmp_url_o)
 									}
 								});
 							})
@@ -377,11 +381,11 @@
 				});
 			},
 			getPreview(index) {
-				const that = this
-				console.log('previewImage', that.order_img.length, that.order_img)
+				const _this = this
+				console.log('previewImage', _this.order_img.length, _this.order_img)
 				uni.previewImage({
 					current: index,
-					urls: that.order_img,
+					urls: _this.order_img,
 					longPressActions: {
 						itemList: ['发送给朋友', '保存图片', '收藏'],
 						success: function(data) {
@@ -393,25 +397,27 @@
 					}
 				});
 			},
-			deleteImage(e,index){
-				console.log('e',e)
+			deleteImage(e, index) {
+				console.log('e', e)
 				e.stopPropagation()
 				e.stopPropagation()
-				const that = this
+				const _this = this
 				uni.showModal({
-				    title: '提示',
-				    content: '删除这张图片？',
-				    success: function (res) {
-				        if (res.confirm) {
-				            console.log('用户点击确定');
-							that.order_img.splice(index,1)
-				        } else if (res.cancel) {
-				            console.log('用户点击取消');
-				        }
-				    }
+					title: '提示',
+					content: '删除这张图片？',
+					success: function(res) {
+						if (res.confirm) {
+							console.log('用户点击确定');
+							_this.order_img.splice(index, 1)
+							_this.order_origin_img.splice(index, 1)
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
+					}
 				});
 			},
 			openMap() { //点击地图
+			console.log('this.$store.state.type',this.$store.state.type)
 				if ((this.order_status == 3 && this.$store.state.type == 1) || this.$store.state.type == 2) {
 					uni.openLocation({
 						latitude: this.latitude,
@@ -457,37 +463,21 @@
 			// 获取基本信息
 			getBasicInfo() {
 				const _this = this
-				wx.request({
-					url: 'http://qx.51zhengrui.com/wechat_api/order/get_member_information',
-					data: {
-						'openid': _this.$store.state.openid,
-					},
-					header: {
-						'token': _this.$store.state.token,
-						'content-type': 'application/json'
-					},
-					success(res) {
-						if (res.data.code == 0) {
-							_this.memberInfo = res.data.data
-						}
-						console.log('member_information', res)
+				_this.$http('/wechat_api/order/get_member_information', {
+					'openid': _this.$store.state.openid,
+				}).then(res => {
+					if (res.data.code == 0) {
+						_this.memberInfo = res.data.data
 					}
+					console.log('member_information', res)
 				})
 			},
 			// 获取所有项目选项
 			getAllProject() {
 				const _this = this
-				wx.request({
-					url: 'http://qx.51zhengrui.com/wechat_api/order/get_maintenance_items',
-					data: {},
-					header: {
-						'token': _this.$store.state.token,
-						'content-type': 'application/json'
-					},
-					success(res) {
-						if (res.data.code == 0) {
-							_this.projectArray = res.data.data
-						}
+				_this.$http('/wechat_api/order/get_maintenance_items', {}).then(res => {
+					if (res.data.code == 0) {
+						_this.projectArray = res.data.data
 					}
 				})
 			},
@@ -497,7 +487,6 @@
 					return false
 				}
 				this.projectArray[index].content[index2].brandValue = Number(e.detail.value)
-
 				this.projectArray[index].content[index2].brand.forEach(item => {
 					if (item.item_type && item.item_type.length > 0) {
 						item.item_type.forEach(item2 => {
@@ -601,42 +590,34 @@
 					return false
 				}
 				const _this = this
-				wx.request({
-					url: 'http://qx.51zhengrui.com/wechat_api/order/get_parts_good_list',
-					data: {
-						'maintenance_items_id': id
-					},
-					header: {
-						'token': _this.$store.state.token,
-						'content-type': 'application/json'
-					},
-					success(res) {
-						if (res.data.code == 0) {
-							if (res.data.data.length > 0) {
-								_this.ids.push(id)
-								res.data.data.forEach(item => {
-									if (item.brand && item.brand.length > 0) {
-										item.brandValue = 0
-										item.brand.forEach(item2 => {
-											if (item2.item_type && item2.item_type.length > 0) {
-												item2.itemValue = 0
-												item2.item_type.forEach(item3 => {
-													item3.good_number = 0
-												})
-											}
-										})
-									}
-								})
-								_this.projectArray[_index].content = res.data.data
-								_this.$forceUpdate()
-								console.log('xxxuuu', _this.projectArray)
-							} else {
-								uni.showToast({
-									icon: 'none',
-									title: '暂无数据',
-									duration: 2000
-								});
-							}
+				_this.$http('/wechat_api/order/get_parts_good_list', {
+					'maintenance_items_id': id
+				}).then(res => {
+					if (res.data.code == 0) {
+						if (res.data.data.length > 0) {
+							_this.ids.push(id)
+							res.data.data.forEach(item => {
+								if (item.brand && item.brand.length > 0) {
+									item.brandValue = 0
+									item.brand.forEach(item2 => {
+										if (item2.item_type && item2.item_type.length > 0) {
+											item2.itemValue = 0
+											item2.item_type.forEach(item3 => {
+												item3.good_number = 0
+											})
+										}
+									})
+								}
+							})
+							_this.projectArray[_index].content = res.data.data
+							_this.$forceUpdate()
+							console.log('xxxuuu', _this.projectArray)
+						} else {
+							uni.showToast({
+								icon: 'none',
+								title: '暂无数据',
+								duration: 2000
+							});
 						}
 					}
 				})
@@ -650,116 +631,108 @@
 			// 获取订单详情信息
 			getdetailInfo(id) {
 				const _this = this
-				wx.request({
-					url: 'http://qx.51zhengrui.com/wechat_api/order/order_detail',
-					data: {
-						order_no: id,
-						member_id: _this.$store.state.member_id,
-						type: _this.$store.state.type
-					},
-					header: {
-						'token': _this.$store.state.token,
-						'content-type': 'application/json'
-					},
-					success(res1) {
-						console.log('detail', res1.data.data)
-						if (res1.data.code == 0) {
-							_this.next_oil_change_time = res1.data.data.next_oil_change_time
-							_this.order_delivery_time = res1.data.data.order_delivery_time
-							_this.maintenance_mileage_number = res1.data.data.maintenance_mileage_number
-							_this.longitude = res1.data.data.longitude
-							_this.latitude = res1.data.data.latitude
-							_this.location =  res1.data.data.order_address
-							_this.result = res1.data.data.order_money
-							let tmp_img_list = res1.data.data.order_img.split(',')
-							let tmp_img_result = []
-							let tmp_img_result2 = []
-							console.log('tmp_img_list', tmp_img_list)
-							if (tmp_img_list && tmp_img_list.length > 0) {
-								tmp_img_list.map(item => {
-									tmp_img_result.push(apiUrl + '/' + item)
-									tmp_img_result2.push('/' + item)
-								})
-							}
-							console.log('tmp_img_list', tmp_img_result)
-							_this.order_img = tmp_img_result
-							_this.order_origin_img = tmp_img_result2
+				_this.$http('/wechat_api/order/order_detail', {
+					order_no: id,
+					member_id: _this.$store.state.member_id,
+					type: _this.$store.state.type
+				}).then(res1 => {
+					if (res1.data.code == 0) {
+						_this.next_oil_change_time = res1.data.data.next_oil_change_time
+						_this.order_delivery_time = res1.data.data.order_delivery_time
+						_this.maintenance_mileage_number = res1.data.data.maintenance_mileage_number
+						_this.longitude = res1.data.data.longitude
+						_this.latitude = res1.data.data.latitude
+						_this.location = res1.data.data.order_address
+						_this.result = res1.data.data.order_money
+						let tmp_img_list = res1.data.data.order_img==''?[]:res1.data.data.order_img.split(',')
+						let tmp_img_result = []
+						let tmp_img_result2 = []
+						console.log('tmp_img_list', tmp_img_list)
+						if (tmp_img_list && tmp_img_list.length > 0) {
+							tmp_img_list.map(item => {
+								tmp_img_result.push(apiUrl + item)
+								tmp_img_result2.push(item)
+							})
+						}
+						console.log('tmp_img_list', tmp_img_result)
+						_this.order_img = tmp_img_result
+						_this.order_origin_img = tmp_img_result2
 
-							if (res1.data.data.order && res1.data.data.order.length > 0) {
-								res1.data.data.order.forEach(order_item => {
-									wx.request({
-										url: 'http://qx.51zhengrui.com/wechat_api/order/get_parts_good_list',
-										data: {
-											'maintenance_items_id': order_item.maintenance_items_id
-										},
-										header: {
-											'token': _this.$store.state.token,
-											'content-type': 'application/json'
-										},
-										success(res2) {
-											if (res2.data.data.length > 0) {
-												_this.ids.push(order_item.maintenance_items_id)
+						if (res1.data.data.order && res1.data.data.order.length > 0) {
+							res1.data.data.order.forEach(order_item => {
+								_this.$http('/wechat_api/order/get_parts_good_list', {
+									'maintenance_items_id': order_item.maintenance_items_id
+								}).then(res2 => {
+									if (res2.data.data.length > 0) {
+										_this.ids.push(order_item.maintenance_items_id)
 
-												res2.data.data.forEach(item => {
-													if (item.brand && item.brand.length > 0) {
-														item.brandValue = 0
-														item.brand_ids = []
-														item.brand.forEach(item2 => {
-															item.brand_ids.push(item2.brand_id)
-															if (item2.item_type && item2.item_type.length > 0) {
-																item2.itemValue = 0
-																item2.item_ids = []
-																item2.item_type.forEach(item3 => {
-																	item2.item_ids.push(item3.item_type_id)
-																	item3.good_number = 0
+										res2.data.data.forEach(item => {
+											if (item.brand && item.brand.length > 0) {
+												item.brandValue = 0
+												item.brand_ids = []
+												item.brand.forEach(item2 => {
+													item.brand_ids.push(item2.brand_id)
+													if (item2.item_type && item2.item_type.length > 0) {
+														item2.itemValue = 0
+														item2.item_ids = []
+														item2.item_type.forEach(item3 => {
+															item2.item_ids.push(item3.item_type_id)
+															item3.good_number = 0
+														})
+													}
+												})
+											}
+										})
+
+
+										if (order_item.good && order_item.good.length > 0) {
+											order_item.good.forEach(good_item => {
+												res2.data.data.forEach(x => {
+													if (good_item.parts_id == x.parts_id) {
+														x.brandValue = x.brand_ids.indexOf(good_item.brand_id)
+
+														x.brand.forEach(y => {
+															if (good_item.brand_id == y.brand_id) {
+																y.itemValue = y.item_ids.indexOf(good_item.item_type_id)
+
+																y.item_type.forEach(z => {
+																	if (good_item.good_id == z.good_id) {
+																		z.good_number = good_item.good_number
+																	}
 																})
 															}
 														})
 													}
 												})
-
-
-												if (order_item.good && order_item.good.length > 0) {
-													order_item.good.forEach(good_item => {
-														res2.data.data.forEach(x => {
-															if (good_item.parts_id == x.parts_id) {
-																x.brandValue = x.brand_ids.indexOf(good_item.brand_id)
-
-																x.brand.forEach(y => {
-																	if (good_item.brand_id == y.brand_id) {
-																		y.itemValue = y.item_ids.indexOf(good_item.item_type_id)
-
-																		y.item_type.forEach(z => {
-																			if (good_item.good_id == z.good_id) {
-																				z.good_number = good_item.good_number
-																			}
-																		})
-																	}
-																})
-															}
-														})
-													})
-												}
-
-												let project_ids = []
-												_this.projectArray.forEach(pro_item => {
-													project_ids.push(pro_item.maintenance_items_id)
-												})
-												let order_item_index = project_ids.indexOf(order_item.maintenance_items_id)
-												_this.projectArray[order_item_index].content = res2.data.data
-
-												_this.$forceUpdate()
-											}
+											})
 										}
-									})
+
+										let project_ids = []
+										_this.projectArray.forEach(pro_item => {
+											project_ids.push(pro_item.maintenance_items_id)
+										})
+										let order_item_index = project_ids.indexOf(order_item.maintenance_items_id)
+										_this.projectArray[order_item_index].content = res2.data.data
+
+										_this.$forceUpdate()
+									}
 								})
-							}
+							})
 						}
 					}
 				})
 			},
-			doSubmit() {
-				const that = this
+			doSubmit(e) {
+				e.stopPropagation()
+				const _this = this
+				if (this.location == '') {
+					uni.showToast({
+						icon: 'none',
+						title: '请获取定位信息',
+						duration: 2000
+					});
+					return false
+				}
 				if (this.result == 0) {
 					uni.showToast({
 						icon: 'none',
@@ -774,8 +747,8 @@
 					mask: true
 				});
 
-				let time = (new Date(this.next_oil_change_time).getTime()) / 1000
-				let time2 = (new Date(this.order_delivery_time).getTime()) / 1000
+				let time = (new Date(this.next_oil_change_time).getTime()) / 1000 || ''
+				let time2 = (new Date(this.order_delivery_time).getTime()) / 1000 || ''
 				let order_detail = []
 
 				if (this.projectArray.length > 0) {
@@ -813,65 +786,57 @@
 				let post_url = ''
 				let post_data = {}
 				if (!this.detail) {
-					post_url = 'http://qx.51zhengrui.com/wechat_api/order/order_add'
-					post_data.member_id = that.memberInfo.member_id
+					post_url = '/wechat_api/order/order_add'
+					post_data.member_id = _this.memberInfo.member_id
 					post_data.next_oil_change_time = time
-					post_data.order_money = that.result
+					post_data.order_money = _this.result
 					post_data.order_detail_list = JSON.stringify(order_detail)
-					post_data.order_longitude = that.longitude
-					post_data.order_latitude = that.latitude
+					post_data.order_longitude = _this.longitude
+					post_data.order_latitude = _this.latitude
 					post_data.order_delivery_time = time2
-					post_data.maintenance_mileage_number = that.maintenance_mileage_number
-					post_data.order_img = that.order_origin_img.join(',')
-					post_data.order_address = that.location
+					post_data.maintenance_mileage_number = _this.maintenance_mileage_number
+					post_data.order_img = _this.order_origin_img.join(',')
+					post_data.order_address = _this.location
 				} else {
-					post_url = 'http://qx.51zhengrui.com/wechat_api/order/order_edit'
-					post_data.order_no = that.order_no
+					post_url = '/wechat_api/order/order_edit'
+					post_data.order_no = _this.order_no
 					post_data.next_oil_change_time = time
-					post_data.order_money = that.result
+					post_data.order_money = _this.result
 					post_data.order_detail_list = JSON.stringify(order_detail)
-					post_data.order_longitude = that.longitude
-					post_data.order_latitude = that.latitude
+					post_data.order_longitude = _this.longitude
+					post_data.order_latitude = _this.latitude
 					post_data.order_delivery_time = time2
-					post_data.maintenance_mileage_number = that.maintenance_mileage_number
-					post_data.order_img = that.order_origin_img.join(',')
-					post_data.order_address = that.location
+					post_data.maintenance_mileage_number = _this.maintenance_mileage_number
+					post_data.order_img = _this.order_origin_img.join(',')
+					post_data.order_address = _this.location
 				}
-				wx.request({
-					url: post_url,
-					data: post_data,
-					method: 'POST',
-					header: {
-						'token': that.$store.state.token,
-						'content-type': 'application/json'
-					},
-					success(res) {
-						if (res.data.code == 0) {
-							uni.showToast({
-								icon: 'none',
-								title: res.data.msg,
-								duration: 1000,
-								mask: true,
-								success: () => {
-									setTimeout(function() {
-										uni.redirectTo({
-											url: "/pages/list/list",
-											success: () => {
-												uni.hideLoading();
-												that.init()
-											}
-										})
-									}, 1000)
-								}
-							});
-						}
-					},
-					complete() {
-
+				_this.$http(post_url, post_data,'POST').then(res => {
+					if (res.data.code == 0) {
+						uni.showToast({
+							icon: 'none',
+							title: res.data.msg,
+							duration: 1000,
+							mask: true,
+							success: () => {
+								setTimeout(function() {
+									uni.navigateBack({
+									    delta: 1
+									});
+									// uni.redirectTo({
+									// 	url: "/pages/list/list",
+									// 	success: () => {
+									// 		uni.hideLoading();
+									// 		_this.init()
+									// 	}
+									// })
+								}, 1000)
+							}
+						});
 					}
 				})
 			},
-			docomplete() {
+			docomplete(e) {
+				e.stopPropagation()
 				this.$http('/wechat_api/order/order', {
 					order_status: 3
 				}).then(res => {
@@ -1137,9 +1102,9 @@
 						align-items: center;
 						position: relative;
 
-						&:nth-child(4n) {
-							margin-right: 0;
-						}
+						// &:nth-child(4n) {
+						// 	margin-right: 0;
+						// }
 
 						.info-picture-cell {
 							width: 100%;
@@ -1339,6 +1304,7 @@
 			width: 100%;
 			height: 102rpx;
 			display: flex;
+			z-index: 99;
 
 			.result-left {
 				background: #3B3B3D;

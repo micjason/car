@@ -10,12 +10,14 @@ App.mpType = 'app'
 
 Vue.use(globalMixin);
 
-Vue.prototype.$http = function(url, data) {
+Vue.prototype.$http = function(url, data, type='GET') {
+	console.log('type',type)
 	let tmp_token = this.$store.state.token
 	return new Promise((resolve,reject)=>{
 		wx.request({
 			url: apiUrl+url,
 			data,
+			method: type,
 			header: {
 				'token': tmp_token?tmp_token:'',
 				'content-type': 'application/json'

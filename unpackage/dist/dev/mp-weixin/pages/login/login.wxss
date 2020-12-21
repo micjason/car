@@ -4,8 +4,7 @@
 .login .login-logo.data-v-b237504c {
   width: 240rpx;
   height: 240rpx;
-  -webkit-border-radius: 50%;
-          border-radius: 50%;
+  border-radius: 50%;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -24,8 +23,7 @@
 }
 .login .login-box.data-v-b237504c {
   height: 80rpx;
-  -webkit-border-radius: 40rpx;
-          border-radius: 40rpx;
+  border-radius: 40rpx;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -60,8 +58,7 @@
 }
 .login .login-btn.data-v-b237504c {
   height: 80rpx;
-  -webkit-border-radius: 40rpx;
-          border-radius: 40rpx;
+  border-radius: 40rpx;
   background: #219DFF;
   margin-top: 50rpx;
   text-align: center;
