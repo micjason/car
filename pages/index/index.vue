@@ -101,7 +101,6 @@
 					</view>
 				</view>
 			</view>
-
 			<view class="info-box">
 				<view class="info-left"></view>
 				<view class="info-right">
@@ -142,17 +141,14 @@
 					</view>
 				</view>
 			</view> -->
-			<view class="info-box">
-				<view class="info-left"></view>
-				<view class="info-right">
-					<view class="info-name">
-						定位
-					</view>
-					<view class="info-value">
-						<view class="location-info">{{location}}</view>
-						<view v-if="canWrite" class="location-icon" @click="openMap">
-							<image src="../../static/image/location.png"></image>
-						</view>
+			<view class="info-picture">
+				<view class="info-picture-left">
+					定位
+				</view>
+				<view class="info-picture-right">
+					<view class="location-info">{{location}}</view>
+					<view v-if="canWrite" class="location-icon" @click="openMap">
+						<image src="../../static/image/location.png"></image>
 					</view>
 				</view>
 			</view>
@@ -163,6 +159,9 @@
 				<view class="info-picture-right">
 					<view class="info-picture-box" v-for="(item,index) in order_img" :key="index" @click='getPreview(index)'>
 						<image class="info-picture-cell" :src="item"></image>
+						<view class="picture-delete" @click.stop="deleteImage($event,index)">
+							<image src="../../static/image/delete-image.png"></image>
+						</view>
 					</view>
 					<view class="info-picture-box" @click="chooseImage">
 						<image class="info-picture-add" src="../../static/image/camer.png"></image>
@@ -170,7 +169,6 @@
 				</view>
 			</view>
 		</view>
-		<!-- <map style="width: 100%; height: 289rpx;" :latitude="latitude" :longitude="longitude" :markers="covers" @tap="openMap()"></map> -->
 		<view class="maintain-info" v-if="projectArray.length>0">
 			<view class="common-title">
 				<image src="../../static/image/line.png"></image>
@@ -225,7 +223,6 @@
 				</template>
 			</view>
 		</view>
-
 		<view class="project-add" v-if="projectArray.length>0 && canWrite">
 			<image class="project-add-icon" src='../../static/image/add.png'></image>
 			<view class="project-add-text" @click="addProject">添加维修项目</view>
@@ -242,13 +239,10 @@
 						<text class="result-order-price-icon">￥</text>
 						<text class="result-order-price-text">{{result}}</text>
 					</view>
-					<!-- <view class="result-order-pay">
-						另需人工费¥100
-					</view> -->
 				</view>
 			</view>
 			<view class="result-btn" @click='doSubmit' v-if="type==1&&order_status!=3">提交</view>
-			<view class="result-btn" @click='docomplete' v-if="type==2&&order_status==2">完成</view>
+			<view class="result-btn" @click='docomplete' v-if="type==2&&order_status==2">订单完成</view>
 		</view>
 	</view>
 </template>
@@ -384,7 +378,7 @@
 			},
 			getPreview(index) {
 				const that = this
-				console.log('previewImage',that.order_img.length,that.order_img)
+				console.log('previewImage', that.order_img.length, that.order_img)
 				uni.previewImage({
 					current: index,
 					urls: that.order_img,
@@ -397,6 +391,24 @@
 							console.log(err.errMsg);
 						}
 					}
+				});
+			},
+			deleteImage(e,index){
+				console.log('e',e)
+				e.stopPropagation()
+				e.stopPropagation()
+				const that = this
+				uni.showModal({
+				    title: '提示',
+				    content: '删除这张图片？',
+				    success: function (res) {
+				        if (res.confirm) {
+				            console.log('用户点击确定');
+							that.order_img.splice(index,1)
+				        } else if (res.cancel) {
+				            console.log('用户点击取消');
+				        }
+				    }
 				});
 			},
 			openMap() { //点击地图
@@ -657,19 +669,19 @@
 							_this.maintenance_mileage_number = res1.data.data.maintenance_mileage_number
 							_this.longitude = res1.data.data.longitude
 							_this.latitude = res1.data.data.latitude
-							_this.location = ''
+							_this.location =  res1.data.data.order_address
 							_this.result = res1.data.data.order_money
 							let tmp_img_list = res1.data.data.order_img.split(',')
 							let tmp_img_result = []
 							let tmp_img_result2 = []
-							console.log('tmp_img_list',tmp_img_list)
-							if(tmp_img_list&&tmp_img_list.length>0){
-								tmp_img_list.map(item=>{
-									tmp_img_result.push(apiUrl+'/'+item)
-									tmp_img_result2.push('/'+item)
+							console.log('tmp_img_list', tmp_img_list)
+							if (tmp_img_list && tmp_img_list.length > 0) {
+								tmp_img_list.map(item => {
+									tmp_img_result.push(apiUrl + '/' + item)
+									tmp_img_result2.push('/' + item)
 								})
 							}
-							console.log('tmp_img_list',tmp_img_result)
+							console.log('tmp_img_list', tmp_img_result)
 							_this.order_img = tmp_img_result
 							_this.order_origin_img = tmp_img_result2
 
@@ -811,6 +823,7 @@
 					post_data.order_delivery_time = time2
 					post_data.maintenance_mileage_number = that.maintenance_mileage_number
 					post_data.order_img = that.order_origin_img.join(',')
+					post_data.order_address = that.location
 				} else {
 					post_url = 'http://qx.51zhengrui.com/wechat_api/order/order_edit'
 					post_data.order_no = that.order_no
@@ -822,6 +835,7 @@
 					post_data.order_delivery_time = time2
 					post_data.maintenance_mileage_number = that.maintenance_mileage_number
 					post_data.order_img = that.order_origin_img.join(',')
+					post_data.order_address = that.location
 				}
 				wx.request({
 					url: post_url,
@@ -857,11 +871,11 @@
 					}
 				})
 			},
-			docomplete(){
-				this.$http('/wechat_api/order/order',{
-					order_status:3
-				}).then(res=>{
-					console.log('订单完成',res)
+			docomplete() {
+				this.$http('/wechat_api/order/order', {
+					order_status: 3
+				}).then(res => {
+					console.log('订单完成', res)
 				})
 			}
 		}
@@ -1039,22 +1053,6 @@
 							color: #1E242B;
 							font-size: 32rpx;
 						}
-
-						.location-info {}
-
-						.location-icon {
-							width: 70rpx;
-							height: 70rpx;
-							display: flex;
-							justify-content: center;
-							align-items: center;
-
-							image {
-								width: 46rpx;
-								height: 46rpx;
-							}
-						}
-
 					}
 
 					.info-value-date-wrapper {
@@ -1105,6 +1103,28 @@
 				.info-picture-right {
 					display: flex;
 					flex-wrap: wrap;
+					flex: 1;
+
+					.location-info {
+						max-width: calc(100% - 80rpx);
+						line-height: 98rpx;
+						line-height: 50rpx;
+						margin-top: 24rpx;
+					}
+
+					.location-icon {
+						width: 70rpx;
+						height: 70rpx;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+						margin-top: 14rpx;
+
+						image {
+							width: 46rpx;
+							height: 46rpx;
+						}
+					}
 
 					.info-picture-box {
 						width: 100rpx;
@@ -1115,6 +1135,7 @@
 						display: flex;
 						justify-content: center;
 						align-items: center;
+						position: relative;
 
 						&:nth-child(4n) {
 							margin-right: 0;
@@ -1128,6 +1149,25 @@
 						.info-picture-add {
 							width: 64rpx;
 							height: 64rpx;
+						}
+
+						.picture-delete {
+							width: 32rpx;
+							height: 32rpx;
+							border-radius: 50%;
+							background: #FFFFFF;
+							position: absolute;
+							top: -16rpx;
+							right: -16rpx;
+							display: flex;
+							justify-content: center;
+							align-items: center;
+							z-index: 10;
+
+							image {
+								width: 32rpx;
+								height: 32rpx;
+							}
 						}
 					}
 				}
