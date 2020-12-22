@@ -178,7 +178,7 @@
 
 		<view class="project-add" v-if="projectArray.length>0 && canWrite">
 			<image class="project-add-icon" src='../../static/image/add.png'></image>
-			<view class="project-add-text" @click="addProject">添加维修项目</view>
+			<view class="project-add-text">添加维修项目</view>
 			<picker class="hide-pick" @change="handleProject" :value="projectIndex" :range="projectArray" range-key="maintenance_items_name">
 				<view class="hide-pick-project">维修项目</view>
 			</picker>
