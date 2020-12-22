@@ -9260,6 +9260,20 @@ function getDate(type) {
   return "".concat(year, "-").concat(month, "-").concat(day);
 }
 
+/***/ }),
+
+/***/ 52:
+/*!***************************************************!*\
+  !*** C:/Users/admin/Desktop/car/static/js/api.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;var apiUrl = 'http://qx.51zhengrui.com';var _default =
+
+apiUrl;exports.default = _default;
+
 /***/ })
 
 }]);

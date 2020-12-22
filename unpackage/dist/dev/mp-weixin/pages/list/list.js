@@ -130,44 +130,54 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;function _toConsumableArray(arr) {return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();}function _nonIterableSpread() {throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _unsupportedIterableToArray(o, minLen) {if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);}function _iterableToArray(iter) {if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);}function _arrayWithoutHoles(arr) {if (Array.isArray(arr)) return _arrayLikeToArray(arr);}function _arrayLikeToArray(arr, len) {if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {arr2[i] = arr[i];}return arr2;} //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var _default =
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 52));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}function _toConsumableArray(arr) {return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread();}function _nonIterableSpread() {throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");}function _unsupportedIterableToArray(o, minLen) {if (!o) return;if (typeof o === "string") return _arrayLikeToArray(o, minLen);var n = Object.prototype.toString.call(o).slice(8, -1);if (n === "Object" && o.constructor) n = o.constructor.name;if (n === "Map" || n === "Set") return Array.from(o);if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen);}function _iterableToArray(iter) {if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);}function _arrayWithoutHoles(arr) {if (Array.isArray(arr)) return _arrayLikeToArray(arr);}function _arrayLikeToArray(arr, len) {if (len == null || len > arr.length) len = arr.length;for (var i = 0, arr2 = new Array(len); i < len; i++) {arr2[i] = arr[i];}return arr2;}var _default =
 {
   data: function data() {
     return {
@@ -175,7 +185,12 @@ var _default =
       listData: null,
       limit: 5,
       pageIndex: 1,
-      total: 0 };
+      total: 0,
+      indicatorDots: true,
+      autoplay: true,
+      interval: 2000,
+      duration: 500,
+      imageList: [] };
 
   },
   computed: {
@@ -187,14 +202,29 @@ var _default =
     } },
 
   mounted: function mounted() {
+    this.getImageList();
+  },
+  onShow: function onShow() {
+    this.init();
     this.getListData();
   },
   methods: {
-    jumpToDetail: function jumpToDetail(id, status) {
-      console.log('id', id);
+    init: function init() {
+      this.listData = null;
+      this.pageIndex = 1;
+      this.total = 0;
+    },
+    jumpToDetail: function jumpToDetail(e, id, status, index) {
+      e.stopPropagation();
       var url = '';
       if (id) {
-        url = "/pages/index/index?order_no=".concat(id, "&status=").concat(status);
+        var order_info = {};
+        order_info.settle_time = this.listData[index].settle_time;
+        order_info.staff_name = this.listData[index].staff_name;
+        order_info.order_type = this.listData[index].order_type;
+        order_info.order_no = this.listData[index].order_no;
+        var tmp_order_info = encodeURIComponent(JSON.stringify(order_info));
+        url = "/pages/index/index?order_no=".concat(id, "&status=").concat(status, "&order_info=").concat(tmp_order_info);
       } else {
         url = "/pages/index/index";
       }
@@ -204,6 +234,7 @@ var _default =
     },
     getListData: function getListData(status) {
       var that = this;
+      console.log('that.pageIndex', that.pageIndex);
       var post_data = {
         'limit': that.limit,
         'page': that.pageIndex,
@@ -213,24 +244,16 @@ var _default =
       if (status == 'no') {
         post_data.order_status = 2;
       }
-      wx.request({
-        url: 'http://qx.51zhengrui.com/wechat_api/order/order_list',
-        data: post_data,
-        header: {
-          'token': this.$store.state.token,
-          'content-type': 'application/json' },
-
-        success: function success(res) {
-          if (res.data.code === 0) {
-            that.total = res.data.data.count;
-            if (that.listData && that.listData.length > 0) {
-              that.listData = [].concat(_toConsumableArray(that.listData), _toConsumableArray(res.data.data.order_list));
-            } else {
-              that.listData = res.data.data.order_list || [];
-            }
+      this.$http('/wechat_api/order/order_list', post_data).then(function (res) {
+        if (res.data.code === 0) {
+          that.total = res.data.data.count;
+          if (that.listData && that.listData.length > 0) {
+            that.listData = [].concat(_toConsumableArray(that.listData), _toConsumableArray(res.data.data.order_list));
+          } else {
+            that.listData = res.data.data.order_list || [];
           }
-        } });
-
+        }
+      });
     },
     getNext: function getNext() {
       if (this.pageIndex < this.maxIndex) {
@@ -251,6 +274,20 @@ var _default =
       this.pageIndex = 0;
       this.listData = null;
       this.getListData('no');
+    },
+    getImageList: function getImageList() {
+      var _this = this;
+      this.$http('/wechat_api/login/get_rotation_chart_list', {}).then(function (res) {
+        console.log('lunbo', res);
+        if (res.data.code === 0) {
+          if (res.data.data && res.data.data.length > 0) {
+            res.data.data.forEach(function (item) {
+              item.rotation_chart_url = _api.default + item.rotation_chart_url;
+            });
+          }
+          _this.imageList = res.data.data;
+        }
+      });
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 

@@ -161,114 +161,93 @@ var _default =
 
   },
   created: function created() {
-
+    var a = [];
+    a.forEach(function (item) {
+      if (item.uuid && item.uuid == 1) {
+        console.log(123);
+      }
+      console.log(111, item);
+    });
+    console.log('created');
   },
   methods: {
     login: function login(type) {
       var _this = this;
       _this.identify = type;
       if (_this.$store.state.openid) {
-        wx.request({
-          url: 'http://qx.51zhengrui.com/wechat_api/login/login',
-          data: {
-            openid: _this.$store.state.openid,
-            type: type },
+        _this.$http('/wechat_api/login/login', {
+          openid: _this.$store.state.openid,
+          type: type }).
+        then(function (res) {
+          if (res.data.code == 0) {
+            _this.$store.commit('setToken', res.data.data.token);
+            _this.$store.commit('setMember', res.data.data.member_id);
+            uni.navigateTo({
+              url: "/pages/list/list",
+              success: function success() {
+                _this.$store.commit('setType', type);
+              } });
 
-          header: {
-            'content-type': 'application/json' },
+          } else if (res.data.code == -2) {
+            uni.navigateTo({
+              url: "/pages/login/login?type=".concat(_this.identify),
+              success: function success() {
+                _this.$store.commit('setType', type);
+              } });
 
-          success: function success(res) {
-            if (res.data.code == 0) {
-              _this.$store.commit('setToken', res.data.data.token);
-              _this.$store.commit('setMember', res.data.data.member_id);
-              uni.navigateTo({
-                url: "/pages/list/list",
-                success: function success() {
-                  _this.$store.commit('setType', type);
-                } });
-
-            } else
-            if (res.data.code == -2) {
-              uni.navigateTo({
-                url: "/pages/login/login?type=".concat(_this.identify),
-                success: function success() {
-                  _this.$store.commit('setType', type);
-                } });
-
-            } else
-            {
-              uni.showToast({
-                icon: 'none',
-                title: res.data.msg || '服务器异常',
-                duration: 2000 });
-
-            }
-          },
-          fail: function fail() {
+          } else {
             uni.showToast({
               icon: 'none',
-              title: '服务器异常',
+              title: res.data.msg || '服务器异常',
               duration: 2000 });
 
-          } });
+          }
+        }).catch(function (err) {
+          uni.showToast({
+            icon: 'none',
+            title: '服务器异常',
+            duration: 2000 });
 
+        });
       } else {
         uni.login({
           provider: 'weixin',
           success: function success(loginRes) {
             if (loginRes.code) {
-              wx.request({
-                url: 'http://qx.51zhengrui.com/wechat_api/login/get_openid',
-                data: {
-                  code: loginRes.code },
+              this.$http('/wechat_api/login/get_openid', {
+                code: loginRes.code }).
+              then(function (res) {
+                _this.$store.commit('setOpenid', JSON.parse(res.data.data).openid);
+                _this.$http('/wechat_api/login/login', {
+                  openid: _this.$store.state.openid,
+                  type: type }).
+                then(function (res2) {
+                  if (res2.data.code == 0) {
+                    console.log('res2.data.code', res2.data.code);
+                    _this.$store.commit('setToken', res2.data.data.token);
+                    _this.$store.commit('setMember', res2.data.data.member_id);
+                    uni.navigateTo({
+                      url: "/pages/list/list",
+                      success: function success() {
+                        _this.$store.commit('setType', type);
+                      } });
 
-                header: {
-                  'content-type': 'application/json' // 默认值
-                },
-                success: function success(res) {
-                  _this.$store.commit('setOpenid', JSON.parse(res.data.data).openid);
-                  wx.request({
-                    url: 'http://qx.51zhengrui.com/wechat_api/login/login',
-                    data: {
-                      openid: _this.$store.state.openid,
-                      type: type },
+                  } else if (res2.data.code == -2) {
+                    uni.navigateTo({
+                      url: "/pages/login/login?type=".concat(_this.identify),
+                      success: function success() {
+                        _this.$store.commit('setType', type);
+                      } });
 
-                    header: {
-                      'content-type': 'application/json' },
+                  } else {
+                    uni.showToast({
+                      icon: 'none',
+                      title: res2.data.msg,
+                      duration: 2000 });
 
-                    success: function success(res) {
-                      if (res.data.code == 0) {
-                        _this.$store.commit('setToken', res.data.data.token);
-                        _this.$store.commit('setMember', res.data.data.member_id);
-                        uni.navigateTo({
-                          url: "/pages/list/list",
-                          success: function success() {
-                            _this.$store.commit('setType', type);
-                          } });
-
-                      } else
-                      if (res.data.code == -2) {
-                        uni.navigateTo({
-                          url: "/pages/login/login?type=".concat(_this.identify),
-                          success: function success() {
-                            _this.$store.commit('setType', type);
-                          } });
-
-                      } else
-                      {
-                        uni.showToast({
-                          icon: 'none',
-                          title: res.data.msg,
-                          duration: 2000 });
-
-                      }
-                    },
-                    fail: function fail() {
-
-                    } });
-
-                } });
-
+                  }
+                });
+              });
             }
           } });
 
