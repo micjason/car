@@ -17,6 +17,10 @@
       "desc": "你的位置信息将用于小程序位置接口的效果展示"
     }
   },
+<<<<<<< HEAD
   "usingComponents": {},
   "sitemapLocation": "sitemap29.json"
+=======
+  "usingComponents": {}
+>>>>>>> 2e029069c979200f947e800fba2a6ed0b83cbc17
 }
