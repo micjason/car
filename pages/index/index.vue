@@ -16,14 +16,14 @@
 				司机电话：{{memberInfo.member_driver_phone||''}}
 			</view>
 		</view>
-		<view class="order-info" v-if="Object.keys(memberInfo).length>0">
-			<view class="order-info-box" v-if="memberInfo.order_no">
-				<view class="order-name">{{memberInfo.order_type==1?'预约单号':'承修单号'}}：</view>
-				<view class="order-value">{{memberInfo.order_no}}</view>
+		<view class="order-info" v-if="Object.keys(order_info).length>0">
+			<view class="order-info-box" v-if="order_info.order_no">
+				<view class="order-name">{{order_info.order_type==1?'预约单号':'承修单号'}}：</view>
+				<view class="order-value">{{order_info.order_no}}</view>
 			</view>
-			<view class="order-info-box" v-if="memberInfo.staff_id">
-				<view class="order-name">维修技师</view>
-				<view class="order-value">{{memberInfo.staff_id}}</view>
+			<view class="order-info-box" v-if="order_info.staff_name">
+				<view class="order-name">维修技师：</view>
+				<view class="order-value">{{order_info.staff_name}}</view>
 			</view>
 		</view>
 		<view class="basic-info" v-if="Object.keys(memberInfo).length>0">
@@ -295,7 +295,8 @@
 				order_img: [],
 				order_origin_img: [],
 				maintenance_mileage_number: '',
-				location: ''
+				location: '',
+				order_info:{}
 			}
 		},
 		mounted() {
@@ -307,8 +308,9 @@
 			if (Object.keys(options).length > 0) {
 				this.detail = true
 				this.order_no = options.order_no
-				this.order_status = Number(options.order_status)
+				this.order_status = Number(options.status)
 				this.getdetailInfo(options.order_no)
+				this.order_info = JSON.parse(decodeURIComponent(options.order_info));
 			}
 		},
 		onReady() {
@@ -637,13 +639,13 @@
 					type: _this.$store.state.type
 				}).then(res1 => {
 					if (res1.data.code == 0) {
-						_this.next_oil_change_time = res1.data.data.next_oil_change_time
-						_this.order_delivery_time = res1.data.data.order_delivery_time
-						_this.maintenance_mileage_number = res1.data.data.maintenance_mileage_number
-						_this.longitude = res1.data.data.longitude
-						_this.latitude = res1.data.data.latitude
-						_this.location = res1.data.data.order_address
-						_this.result = res1.data.data.order_money
+						_this.next_oil_change_time = res1.data.data.next_oil_change_time || ''
+						_this.order_delivery_time = res1.data.data.order_delivery_time || ''
+						_this.maintenance_mileage_number = res1.data.data.maintenance_mileage_number || ''
+						_this.longitude = res1.data.data.longitude || ''
+						_this.latitude = res1.data.data.latitude || ''
+						_this.location = res1.data.data.order_address || ''
+						_this.result = res1.data.data.order_money || ''
 						let tmp_img_list = res1.data.data.order_img==''?[]:res1.data.data.order_img.split(',')
 						let tmp_img_result = []
 						let tmp_img_result2 = []
@@ -822,13 +824,6 @@
 									uni.navigateBack({
 									    delta: 1
 									});
-									// uni.redirectTo({
-									// 	url: "/pages/list/list",
-									// 	success: () => {
-									// 		uni.hideLoading();
-									// 		_this.init()
-									// 	}
-									// })
 								}, 1000)
 							}
 						});
@@ -836,11 +831,28 @@
 				})
 			},
 			docomplete(e) {
+				const _this = this
 				e.stopPropagation()
-				this.$http('/wechat_api/order/order', {
-					order_status: 3
+				this.$http('/wechat_api/order/order_completion', {
+					order_no: _this.order_no,
+					member_id: _this.$store.state.member_id,
 				}).then(res => {
 					console.log('订单完成', res)
+					if (res.data.code == 0) {
+						uni.showToast({
+							icon: 'none',
+							title: res.data.msg,
+							duration: 1000,
+							mask: true,
+							success: () => {
+								setTimeout(function() {
+									uni.navigateBack({
+									    delta: 1
+									});
+								}, 1000)
+							}
+						});
+					}
 				})
 			}
 		}
@@ -892,14 +904,15 @@
 		.order-info {
 			display: flex;
 			flex-wrap: wrap;
-			justify-content: space-between;
 			align-items: center;
-			padding: 0 23rpx;
+			padding: 0 64rpx 0 54rpx;
 			background-color: #FFFFFF;
+			justify-content: space-between;
 
 			.order-info-box {
 				display: flex;
-				height: 120rpx;
+				height: 80rpx;
+				align-items: center;
 				align-items: center;
 
 				.order-name {

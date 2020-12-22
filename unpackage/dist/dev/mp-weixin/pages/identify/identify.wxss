@@ -26,7 +26,8 @@
   line-height: 220rpx;
   font-size: 48rpx;
   color: #2459A6;
-  border-radius: 50%;
+  -webkit-border-radius: 50%;
+          border-radius: 50%;
   background: #BEDFF2;
 }
 .identify .identify-contnet .identify-box.data-v-0af94406:first-child {

@@ -22,16 +22,15 @@
 			<view class="list-box" v-if="listData&&listData.length>0">
 				<scroll-view scroll-y="true" enable-flex="true" class="scroll-wrapper" @scrolltolower="getNext">
 					<div class="list-scroll-content">
-						<div class="list-scroll-box" v-for="(item,index) in listData" :key="index" @click="jumpToDetail(item.order_no,item.order_status)">
+						<div class="list-scroll-box" v-for="(item,index) in listData" :key="index" @click.stop="jumpToDetail($event,item.order_no,item.order_status,index)">
 							<view :class="['list-order-no',item.order_type==1?'':'carry']">{{item.order_type==1?'预约单号':'承接单号'}}：
-							<text class="list-order-no-num">{{item.order_no}}</text>
+								<text class="list-order-no-num">{{item.order_no}}</text>
 							</view>
 							<view class="list-order-time">订单时间：{{item.order_add_time}}</view>
 							<view class="list-member-name">车主姓名：{{item.member_name}}</view>
 							<view class="list-next-oil">下次换油日期：{{item.next_oil_change_time}}</view>
 							<view class="list-box-btn">
 								<view class="list-order-time">订单状态：{{item.order_status==1?'待分配':item.order_status==2?'已分配':item.order_status==3?'已支付':''}}</view>
-								<view class="list-pay" v-if="item.order_status==2 && type==1">支付</view>
 							</view>
 						</div>
 					</div>
@@ -39,7 +38,7 @@
 			</view>
 		</view>
 
-		<view class="list-add" v-if="type==1" @click="jumpToDetail()">
+		<view class="list-add" v-if="type==1" @click.stop="jumpToDetail($event)">
 			<image class="list-add-new" src="../../static/image/new.png"></image>
 		</view>
 	</view>
@@ -72,14 +71,28 @@
 		},
 		mounted() {
 			this.getImageList()
+		},
+		onShow() {
+			this.init()
 			this.getListData()
 		},
 		methods: {
-			jumpToDetail(id, status) {
-				console.log('id', id)
+			init() {
+				this.listData = null
+				this.pageIndex = 1
+				this.total = 0
+			},
+			jumpToDetail(e, id, status, index) {
+				e.stopPropagation()
 				let url = ''
 				if (id) {
-					url = `/pages/index/index?order_no=${id}&status=${status}`
+					let order_info = {}
+					order_info.settle_time = this.listData[index].settle_time
+					order_info.staff_name = this.listData[index].staff_name
+					order_info.order_type = this.listData[index].order_type
+					order_info.order_no = this.listData[index].order_no
+					let tmp_order_info = encodeURIComponent(JSON.stringify(order_info))
+					url = `/pages/index/index?order_no=${id}&status=${status}&order_info=${tmp_order_info}`
 				} else {
 					url = "/pages/index/index"
 				}
@@ -89,6 +102,7 @@
 			},
 			getListData(status) {
 				const that = this
+				console.log('that.pageIndex', that.pageIndex)
 				let post_data = {
 					'limit': that.limit,
 					'page': that.pageIndex,
@@ -221,11 +235,11 @@
 								margin-bottom: 20rpx;
 								color: #4CD964;
 								border-bottom: 1rpx solid #d9d6dd;
-								
+
 								&.carry {
 									color: #DD524D;
 								}
-								
+
 								&::before {
 									display: block;
 									content: '';
@@ -236,7 +250,7 @@
 									left: -20rpx;
 									top: 18rpx;
 								}
-								
+
 								.list-order-no-num {
 									color: #000000;
 								}
