@@ -73,7 +73,7 @@
 						provider: 'weixin',
 						success: function(loginRes) {
 							if (loginRes.code) {
-								this.$http('/wechat_api/login/get_openid', {
+								_this.$http('/wechat_api/login/get_openid', {
 									code: loginRes.code
 								}).then(res => {
 									_this.$store.commit('setOpenid', JSON.parse(res.data.data).openid)
