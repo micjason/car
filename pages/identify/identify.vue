@@ -20,14 +20,7 @@
 			}
 		},
 		created() {
-			let a = []
-			a.forEach(item=>{
-				if(item.uuid&&item.uuid == 1){
-					console.log(123)
-				}
-				console.log(111,item)
-			})
-			console.log('created')
+
 		},
 		methods: {
 			login(type) {
