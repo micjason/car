@@ -35,14 +35,14 @@
 							_this.$store.commit('setToken', res.data.data.token)
 							_this.$store.commit('setMember', res.data.data.member_id)
 							uni.navigateTo({
-								url: "/pages/list/list",
+								url: `/pages/list/list?type=${type}`,
 								success: () => {
 									_this.$store.commit('setType', type)
 								}
 							})
 						} else if (res.data.code == -2) {
 							uni.navigateTo({
-								url: `/pages/login/login?type=${_this.identify}`,
+								url: `/pages/login/login?type=${type}`,
 								success: () => {
 									_this.$store.commit('setType', type)
 								}
@@ -79,14 +79,14 @@
 											_this.$store.commit('setToken', res2.data.data.token)
 											_this.$store.commit('setMember', res2.data.data.member_id)
 											uni.navigateTo({
-												url: "/pages/list/list",
+												url: `/pages/list/list?type=${type}`,
 												success: () => {
 													_this.$store.commit('setType', type)
 												}
 											})
 										} else if (res2.data.code == -2) {
 											uni.navigateTo({
-												url: `/pages/login/login?type=${_this.identify}`,
+												url: `/pages/login/login?type=${type}`,
 												success: () => {
 													_this.$store.commit('setType', type)
 												}
