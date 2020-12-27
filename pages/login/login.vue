@@ -64,6 +64,7 @@
 						},
 						success(res) {
 							if (res.data.code == 0) {
+								console.log('token',res.data.data.token)
 								_this.$store.commit('setToken', res.data.data.token)
 								_this.$store.commit('setMember', res.data.data.member_id)
 								uni.navigateTo({

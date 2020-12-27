@@ -1,0 +1,21 @@
+{
+  "pages": [
+    "pages/identify/identify",
+    "pages/login/login",
+    "pages/list/list",
+    "pages/index/index"
+  ],
+  "subPackages": [],
+  "window": {
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "无锡卡友之家",
+    "navigationBarBackgroundColor": "#FFFFFF",
+    "backgroundColor": "#000000"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于小程序位置接口的效果展示"
+    }
+  },
+  "usingComponents": {}
+}
