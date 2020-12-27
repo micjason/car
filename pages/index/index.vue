@@ -94,10 +94,18 @@
 							<image src="../../static/image/arrow.png"></image>
 						</view>
 
-						<picker :disabled="canWrite?false:true" class="hide-pick" mode="date" value="" :start="startDate" :end="endDate"
+						<!-- <picker :disabled="canWrite?false:true" class="hide-pick" mode="date" value="" :start="startDate" :end="endDate"
 						 @change="bindNextChange">
 							<view class="hide-pick-time">下次换油日期</view>
-						</picker>
+						</picker> -->
+						<ruiDatePicker
+						class="hide-pick"
+						    fields="hour"
+						    start="2010-00-00 00"
+						    end="2030-12-30 23"
+						    value=""
+						    @change="bindNextChange"
+						></ruiDatePicker>
 					</view>
 				</view>
 			</view>
@@ -248,6 +256,7 @@
 </template>
 
 <script>
+	import ruiDatePicker from '@/components/rattenking-dtpicker/rattenking-dtpicker.vue'
 	import {
 		getDate
 	} from '../../static/js/util.js'
@@ -271,6 +280,9 @@
 			type() {
 				return this.$store.state.type
 			}
+		},
+		components:{
+			ruiDatePicker
 		},
 		data() {
 			return {
@@ -454,7 +466,8 @@
 				this.submit = []
 			},
 			bindNextChange(e) {
-				this.next_oil_change_time = e.detail.value
+				// this.next_oil_change_time = e.detail.value
+				console.log(123,e)
 			},
 			bindSendChange(e) {
 				this.order_delivery_time = e.detail.value
@@ -966,6 +979,11 @@
 			.hide-pick-project {
 				width: 100%;
 				height: 94rpx;
+			}
+			
+			.rui-picker {
+				height: 100%;
+				padding: 0;
 			}
 		}
 
