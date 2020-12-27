@@ -20,14 +20,7 @@
 			}
 		},
 		created() {
-			let a = []
-			a.forEach(item=>{
-				if(item.uuid&&item.uuid == 1){
-					console.log(123)
-				}
-				console.log(111,item)
-			})
-			console.log('created')
+
 		},
 		methods: {
 			login(type) {
@@ -42,14 +35,14 @@
 							_this.$store.commit('setToken', '387e826cac3892f1dd44a92ceb49b585')
 							_this.$store.commit('setMember', res.data.data.member_id)
 							uni.navigateTo({
-								url: "/pages/list/list",
+								url: `/pages/list/list?type=${type}`,
 								success: () => {
 									_this.$store.commit('setType', type)
 								}
 							})
 						} else if (res.data.code == -2) {
 							uni.navigateTo({
-								url: `/pages/login/login?type=${_this.identify}`,
+								url: `/pages/login/login?type=${type}`,
 								success: () => {
 									_this.$store.commit('setType', type)
 								}
@@ -73,7 +66,7 @@
 						provider: 'weixin',
 						success: function(loginRes) {
 							if (loginRes.code) {
-								this.$http('/wechat_api/login/get_openid', {
+								_this.$http('/wechat_api/login/get_openid', {
 									code: loginRes.code
 								}).then(res => {
 									_this.$store.commit('setOpenid', JSON.parse(res.data.data).openid)
@@ -86,14 +79,14 @@
 											_this.$store.commit('setToken', res2.data.data.token)
 											_this.$store.commit('setMember', res2.data.data.member_id)
 											uni.navigateTo({
-												url: "/pages/list/list",
+												url: `/pages/list/list?type=${type}`,
 												success: () => {
 													_this.$store.commit('setType', type)
 												}
 											})
 										} else if (res2.data.code == -2) {
 											uni.navigateTo({
-												url: `/pages/login/login?type=${_this.identify}`,
+												url: `/pages/login/login?type=${type}`,
 												success: () => {
 													_this.$store.commit('setType', type)
 												}

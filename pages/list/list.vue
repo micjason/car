@@ -58,15 +58,27 @@
 				autoplay: true,
 				interval: 2000,
 				duration: 500,
-				imageList: []
+				imageList: [],
+				identify:''
 			}
 		},
 		computed: {
 			type() {
-				return this.$store.state.type
+				let result = ''
+				if(this.identify==''){
+					result = this.$store.state.type
+				}else{
+					result = this.identify
+				}
+				return result
 			},
 			maxIndex() {
 				return Math.ceil(this.total / this.limit)
+			}
+		},
+		onLoad: function(option) {
+			if (option) {
+				this.identify = parseInt(option.type)
 			}
 		},
 		mounted() {
@@ -106,7 +118,7 @@
 				let post_data = {
 					'limit': that.limit,
 					'page': that.pageIndex,
-					'type': that.$store.state.type,
+					'type': that.type,
 					'member_id': that.$store.state.member_id
 				}
 				if (status == 'no') {
