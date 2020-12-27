@@ -468,8 +468,12 @@
 				const _this = this
 				_this.$http('/wechat_api/order/get_member_information', {
 					'openid': _this.$store.state.openid,
+<<<<<<< HEAD
 					order_no: _this.order_no || '',
 					type: _this.$store.state.type
+=======
+					'type':_this.$store.state.type
+>>>>>>> 78c36e8040ec5b5339b7fd882d03952a482dd559
 				}).then(res => {
 					if (res.data.code == 0) {
 						_this.memberInfo = res.data.data
