@@ -39,7 +39,7 @@
 						type,
 					}).then(res => {
 						if (res.data.code == 0) {
-							_this.$store.commit('setToken', res.data.data.token)
+							_this.$store.commit('setToken', '387e826cac3892f1dd44a92ceb49b585')
 							_this.$store.commit('setMember', res.data.data.member_id)
 							uni.navigateTo({
 								url: "/pages/list/list",

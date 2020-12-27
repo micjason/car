@@ -579,14 +579,17 @@
   color: #FFFFFF;
 }
 .content .result .result-btn.data-v-57280228 {
-  width: 216rpx;
+  width: 160rpx;
   height: 102rpx;
   line-height: 102rpx;
   text-align: center;
   background: #277BF6;
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-family: PingFang SC;
   font-weight: 500;
   color: #FFFFFF;
+}
+.content .result .result-btn.result-submit.data-v-57280228 {
+  border-right: 10rpx solid #3B3B3D;
 }
 

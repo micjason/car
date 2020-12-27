@@ -242,6 +242,7 @@
 				</view>
 			</view>
 			<view class="result-btn" @click.stop='doSubmit($event)' v-if="type==1&&order_status!=3">提交</view>
+			<view class="result-btn result-submit" @click.stop='doSubmit($event)' v-if="type==2&&order_status!=3">提交修改</view>
 			<view class="result-btn" @click.stop='docomplete($event)' v-if="type==2&&order_status==2">订单完成</view>
 		</view>
 	</view>
@@ -263,7 +264,7 @@
 			},
 			canWrite() {
 				let result = true
-				if (this.order_status == 3 || this.$store.state.type == 2) {
+				if (this.order_status == 3) {
 					result = false
 				}
 				return result
@@ -467,6 +468,8 @@
 				const _this = this
 				_this.$http('/wechat_api/order/get_member_information', {
 					'openid': _this.$store.state.openid,
+					order_no: _this.order_no || '',
+					type: _this.$store.state.type
 				}).then(res => {
 					if (res.data.code == 0) {
 						_this.memberInfo = res.data.data
@@ -1367,15 +1370,19 @@
 			}
 
 			.result-btn {
-				width: 216rpx;
+				width: 160rpx;
 				height: 102rpx;
 				line-height: 102rpx;
 				text-align: center;
 				background: #277BF6;
-				font-size: 32rpx;
+				font-size: 30rpx;
 				font-family: PingFang SC;
 				font-weight: 500;
 				color: #FFFFFF;
+				
+				&.result-submit {
+					border-right: 10rpx solid #3B3B3D;
+				}
 			}
 		}
 	}
