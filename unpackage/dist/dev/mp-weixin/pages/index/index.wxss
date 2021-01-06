@@ -116,9 +116,9 @@
   width: 100%;
   height: 94rpx;
 }
-.content .hide-pick .rui-picker.data-v-57280228 {
-  height: 100%;
-  padding: 0;
+.content .hide-pick.data-v-57280228 .hide-pick-next {
+  width: 100%;
+  height: 98rpx;
 }
 .content .basic-info.data-v-57280228 {
   margin-top: 36rpx;

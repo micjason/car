@@ -94,18 +94,11 @@
 							<image src="../../static/image/arrow.png"></image>
 						</view>
 
-						<!-- <picker :disabled="canWrite?false:true" class="hide-pick" mode="date" value="" :start="startDate" :end="endDate"
+						<picker :disabled="canWrite?false:true" class="hide-pick" mode="date" value="" :start="startDate" :end="endDate"
 						 @change="bindNextChange">
 							<view class="hide-pick-time">下次换油日期</view>
-						</picker> -->
-						<ruiDatePicker
-						class="hide-pick"
-						    fields="hour"
-						    start="2010-00-00 00"
-						    end="2030-12-30 23"
-						    value=""
-						    @change="bindNextChange"
-						></ruiDatePicker>
+						</picker>
+						
 					</view>
 				</view>
 			</view>
@@ -123,10 +116,18 @@
 							<image src="../../static/image/arrow.png"></image>
 						</view>
 
-						<picker :disabled="canWrite?false:true" class="hide-pick" mode="date" value="" :start="startDate" :end="endDate"
+						<!-- <picker :disabled="canWrite?false:true" class="hide-pick" mode="date" value="" :start="startDate" :end="endDate"
 						 @change="bindSendChange">
 							<view class="hide-pick-time">下次换油日期</view>
-						</picker>
+						</picker> -->
+						<ruiDatePicker
+							class="hide-pick"
+						    fields="hour"
+						    start="2010-00-00 00"
+						    end="2030-12-30 23"
+						    :value="order_delivery_time"
+						    @change="bindSendChange"
+						></ruiDatePicker>
 					</view>
 				</view>
 			</view>
@@ -467,11 +468,10 @@
 				this.submit = []
 			},
 			bindNextChange(e) {
-				// this.next_oil_change_time = e.detail.value
-				console.log(123,e)
+				this.next_oil_change_time = e.detail.value
 			},
 			bindSendChange(e) {
-				this.order_delivery_time = e.detail.value
+				this.order_delivery_time = e
 			},
 			bindDoneChange(e) {
 				this.settle_time = e.detail.value
@@ -655,6 +655,7 @@
 				}).then(res1 => {
 					if (res1.data.code == 0) {
 						_this.next_oil_change_time = res1.data.data.next_oil_change_time || ''
+						console.log(222,_this.next_oil_change_time)
 						_this.order_delivery_time = res1.data.data.order_delivery_time || ''
 						_this.maintenance_mileage_number = res1.data.data.maintenance_mileage_number || ''
 						_this.longitude = res1.data.data.longitude || ''
@@ -764,8 +765,8 @@
 					mask: true
 				});
 
-				let time = (new Date(this.next_oil_change_time).getTime()) / 1000 || ''
-				let time2 = (new Date(this.order_delivery_time).getTime()) / 1000 || ''
+				let time = (new Date(this.next_oil_change_time ).getTime()) / 1000 || ''
+				let time2 = (new Date(this.order_delivery_time+':00:00').getTime()) / 1000 || ''
 				let order_detail = []
 
 				if (this.projectArray.length > 0) {
@@ -982,9 +983,9 @@
 				height: 94rpx;
 			}
 			
-			.rui-picker {
-				height: 100%;
-				padding: 0;
+			/deep/ .hide-pick-next {
+				width: 100%;
+				height: 98rpx;
 			}
 		}
 

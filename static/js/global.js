@@ -1,3 +1,4 @@
+import apiUrl from '@/static/js/api.js'
 export default {
 	install(Vue) {
 		Vue.mixin({
@@ -12,7 +13,7 @@ export default {
 					success: function(loginRes) {
 						if (loginRes.code) {
 							wx.request({
-								url: 'http://qx.51zhengrui.com/wechat_api/login/get_openid',
+								url: apiUrl+'/wechat_api/login/get_openid',
 								data: {
 									code: loginRes.code
 								},

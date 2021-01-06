@@ -410,11 +410,12 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
 var _util = __webpack_require__(/*! ../../static/js/util.js */ 45);
 
 
 
-var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 14));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var ruiDatePicker = function ruiDatePicker() {Promise.all(/*! require.ensure | components/rattenking-dtpicker/rattenking-dtpicker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/rattenking-dtpicker/rattenking-dtpicker")]).then((function () {return resolve(__webpack_require__(/*! @/components/rattenking-dtpicker/rattenking-dtpicker.vue */ 48));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
+var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 12));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var ruiDatePicker = function ruiDatePicker() {Promise.all(/*! require.ensure | components/rattenking-dtpicker/rattenking-dtpicker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/rattenking-dtpicker/rattenking-dtpicker")]).then((function () {return resolve(__webpack_require__(/*! @/components/rattenking-dtpicker/rattenking-dtpicker.vue */ 48));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
 {
   computed: {
     startDate: function startDate() {
@@ -619,11 +620,10 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
       this.submit = [];
     },
     bindNextChange: function bindNextChange(e) {
-      // this.next_oil_change_time = e.detail.value
-      console.log(123, e);
+      this.next_oil_change_time = e.detail.value;
     },
     bindSendChange: function bindSendChange(e) {
-      this.order_delivery_time = e.detail.value;
+      this.order_delivery_time = e;
     },
     bindDoneChange: function bindDoneChange(e) {
       this.settle_time = e.detail.value;
@@ -807,6 +807,7 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
       then(function (res1) {
         if (res1.data.code == 0) {
           _this.next_oil_change_time = res1.data.data.next_oil_change_time || '';
+          console.log(222, _this.next_oil_change_time);
           _this.order_delivery_time = res1.data.data.order_delivery_time || '';
           _this.maintenance_mileage_number = res1.data.data.maintenance_mileage_number || '';
           _this.longitude = res1.data.data.longitude || '';
@@ -917,7 +918,7 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
 
 
       var time = new Date(this.next_oil_change_time).getTime() / 1000 || '';
-      var time2 = new Date(this.order_delivery_time).getTime() / 1000 || '';
+      var time2 = new Date(this.order_delivery_time + ':00:00').getTime() / 1000 || '';
       var order_detail = [];
 
       if (this.projectArray.length > 0) {

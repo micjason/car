@@ -8,11 +8,6 @@
 			<input type="number" v-model="phone" @blur="doJudge('phone')" placeholder="请输入电话号码">
 			<view class="error" v-if="phoneError">电话号码有误</view>
 		</view>
-		<!-- <view class="login-box">
-			<image src="../../static/image/password.png"></image>
-			<input type="number" v-model="password" @blur="doJudge('pass')" placeholder="请输入密码">
-			<view class="error" v-if="passwordError">密码有误</view>
-		</view> -->
 		<view class="login-btn" @click="handleBind">
 			绑定
 		</view>
@@ -20,6 +15,7 @@
 </template>
 
 <script>
+	import apiUrl from '@/static/js/api.js'
 	export default {
 		data() {
 			return {
@@ -45,15 +41,9 @@
 				} else {
 					_this.phoneError = false
 				}
-				// if (!_this.judgePassword(_this.phone, _this.password)) {
-				// 	_this.passwordError = true
-				// 	return false
-				// } else {
-				// 	_this.passwordError = false
-				// }
 				if (!_this.phoneError) {
 					wx.request({
-						url: 'http://qx.51zhengrui.com/wechat_api/login/login',
+						url: apiUrl+'/wechat_api/login/login',
 						data: {
 							openid: _this.$store.state.openid,
 							type: _this.identify,

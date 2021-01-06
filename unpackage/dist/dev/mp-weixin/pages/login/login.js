@@ -130,44 +130,40 @@ __webpack_require__.r(__webpack_exports__);
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0; //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-var _default =
-{
-  data: function data() {
-    return {
-      phone: '',
-      phoneError: false,
-      password: '',
-      passwordError: false,
-      identify: 1 };
+/* WEBPACK VAR INJECTION */(function(uni) {Object.defineProperty(exports, "__esModule", { value: true });exports.default = void 0;
 
-  },
-  onLoad: function onLoad(option) {
-    console.log('option', option);
-    if (option) {
-      this.identify = parseInt(option.type);
-    }
-  },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 12));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var _default = { data: function data() {return { phone: '', phoneError: false, password: '', passwordError: false, identify: 1 };}, onLoad: function onLoad(option) {console.log('option', option);if (option) {this.identify = parseInt(option.type);}},
   methods: {
     handleBind: function handleBind() {
       var _this = this;
@@ -177,15 +173,9 @@ var _default =
       } else {
         _this.phoneError = false;
       }
-      // if (!_this.judgePassword(_this.phone, _this.password)) {
-      // 	_this.passwordError = true
-      // 	return false
-      // } else {
-      // 	_this.passwordError = false
-      // }
       if (!_this.phoneError) {
         wx.request({
-          url: 'http://qx.51zhengrui.com/wechat_api/login/login',
+          url: _api.default + '/wechat_api/login/login',
           data: {
             openid: _this.$store.state.openid,
             type: _this.identify,
