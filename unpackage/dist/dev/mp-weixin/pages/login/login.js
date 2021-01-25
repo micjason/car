@@ -189,13 +189,15 @@ var _default = { data: function data() {return { phone: '', phoneError: false, p
               console.log('token', res.data.data.token);
               _this.$store.commit('setToken', res.data.data.token);
               _this.$store.commit('setMember', res.data.data.member_id);
+              var tmp_url = "/pages/list/list";
+              if (_this.identify === 3) {
+                tmp_url = "/pages/admin/index/index";
+              }
               uni.navigateTo({
-                url: "/pages/list/list",
+                url: tmp_url,
                 success: function success() {
                   _this.phone = '';
                   _this.phoneError = false;
-                  // _this.password = ''
-                  // _this.passwordError = false
                 } });
 
             } else {

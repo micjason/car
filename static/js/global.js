@@ -23,9 +23,7 @@ export default {
 								success(res) {
 									_this.$store.commit('setOpenid', JSON.parse(res.data.data).openid)
 								}
-							})
-
-							
+							})	
 						}
 					}
 				});

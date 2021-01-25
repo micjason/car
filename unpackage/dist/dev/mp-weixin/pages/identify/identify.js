@@ -153,6 +153,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
 var _default =
 {
   data: function data() {
@@ -175,8 +178,12 @@ var _default =
           if (res.data.code == 0) {
             _this.$store.commit('setToken', res.data.data.token);
             _this.$store.commit('setMember', res.data.data.member_id);
+            var tmp_url = "/pages/list/list?type=".concat(type);
+            if (type === 3) {
+              tmp_url = "/pages/admin/index/index?type=".concat(type);
+            }
             uni.navigateTo({
-              url: "/pages/list/list?type=".concat(type),
+              url: tmp_url,
               success: function success() {
                 _this.$store.commit('setType', type);
               } });
@@ -216,11 +223,15 @@ var _default =
                   type: type }).
                 then(function (res2) {
                   if (res2.data.code == 0) {
-                    console.log('res2.data.code', res2.data.code);
                     _this.$store.commit('setToken', res2.data.data.token);
                     _this.$store.commit('setMember', res2.data.data.member_id);
+
+                    var tmp_url = "/pages/list/list?type=".concat(type);
+                    if (type === 3) {
+                      tmp_url = "/pages/admin/index/index?type=".concat(type);
+                    }
                     uni.navigateTo({
-                      url: "/pages/list/list?type=".concat(type),
+                      url: tmp_url,
                       success: function success() {
                         _this.$store.commit('setType', type);
                       } });
@@ -245,6 +256,14 @@ var _default =
           } });
 
       }
+    },
+    jumpAdmin: function jumpAdmin(type) {var _this2 = this;
+      uni.navigateTo({
+        url: "/pages/login/admin?type=".concat(type),
+        success: function success() {
+          _this2.$store.commit('setType', type);
+        } });
+
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 

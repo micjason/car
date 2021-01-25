@@ -28,8 +28,50 @@
 			"style": {
 				"navigationBarTitleText": "无锡卡友之家"
 			}
+		},
+		{
+			"path": "pages/login/admin",
+			"style": {
+				"navigationBarTitleText": "无锡卡友之家"
+			}
 		}
-	],
+	    ,{
+            "path" : "pages/admin/index/index",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "无锡卡友之家",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/admin/order/order",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "无锡卡友之家",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/admin/staff/staff",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "无锡卡友之家",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+        ,{
+            "path" : "pages/admin/performance/performance",
+            "style" :                                                                                    
+            {
+                "navigationBarTitleText": "",
+                "enablePullDownRefresh": false
+            }
+            
+        }
+    ],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "无锡卡友之家",

@@ -116,10 +116,6 @@
 							<image src="../../static/image/arrow.png"></image>
 						</view>
 
-						<!-- <picker :disabled="canWrite?false:true" class="hide-pick" mode="date" value="" :start="startDate" :end="endDate"
-						 @change="bindSendChange">
-							<view class="hide-pick-time">下次换油日期</view>
-						</picker> -->
 						<ruiDatePicker
 							class="hide-pick"
 						    fields="hour"
@@ -131,25 +127,6 @@
 					</view>
 				</view>
 			</view>
-			<!-- <view class="info-box">
-				<view class="info-left"></view>
-				<view class="info-right">
-					<view class="info-name">
-						结清日期
-					</view>
-					<view class="info-value-date-wrapper">
-						<view :class="['info-value-date',settle_time?'':'no-value']">
-							{{settle_time?settle_time:'请选择结清日期'}}
-						</view>
-						<view class="info-car-icon"><image src="../../static/image/arrow.png"></image></view>
-						
-						<picker class="hide-pick" mode="date" value="" :start="startDate" :end="endDate"
-						 @change="bindDoneChange">
-							<view class="hide-pick-time">结清日期</view>
-						</picker>
-					</view>
-				</view>
-			</view> -->
 			<view class="info-picture">
 				<view class="info-picture-left">
 					定位
@@ -261,7 +238,7 @@
 	import ruiDatePicker from '@/components/rattenking-dtpicker/rattenking-dtpicker.vue'
 	import {
 		getDate
-	} from '../../static/js/util.js'
+	} from '@/static/js/util.js'
 
 	import apiUrl from '@/static/js/api.js'
 	export default {

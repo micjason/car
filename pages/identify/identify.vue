@@ -8,6 +8,9 @@
 			<div class="identify-box" @click="login(2)">
 				维修员
 			</div>
+			<div class="identify-box" @click="login(3)">
+				管理员
+			</div>
 		</view>
 	</view>
 </template>
@@ -34,8 +37,12 @@
 						if (res.data.code == 0) {
 							_this.$store.commit('setToken', res.data.data.token)
 							_this.$store.commit('setMember', res.data.data.member_id)
+							let tmp_url = `/pages/list/list?type=${type}`
+							if(type===3){
+								tmp_url = `/pages/admin/index/index?type=${type}`
+							}
 							uni.navigateTo({
-								url: `/pages/list/list?type=${type}`,
+								url: tmp_url,
 								success: () => {
 									_this.$store.commit('setType', type)
 								}
@@ -75,11 +82,15 @@
 										type,
 									}).then(res2 => {
 										if (res2.data.code == 0) {
-											console.log('res2.data.code', res2.data.code)
 											_this.$store.commit('setToken', res2.data.data.token)
 											_this.$store.commit('setMember', res2.data.data.member_id)
+											
+											let tmp_url = `/pages/list/list?type=${type}`
+											if(type===3){
+												tmp_url = `/pages/admin/index/index?type=${type}`
+											}
 											uni.navigateTo({
-												url: `/pages/list/list?type=${type}`,
+												url: tmp_url,
 												success: () => {
 													_this.$store.commit('setType', type)
 												}
@@ -104,6 +115,14 @@
 						}
 					});
 				}
+			},
+			jumpAdmin(type){
+				uni.navigateTo({
+					url: `/pages/login/admin?type=${type}`,
+					success: () => {
+						this.$store.commit('setType', type)
+					}
+				})
 			}
 		}
 	}
@@ -129,17 +148,18 @@
 			justify-content: center;
 
 			.identify-box {
-				width: 220rpx;
-				height: 220rpx;
+				width: 200rpx;
+				height: 200rpx;
 				text-align: center;
-				line-height: 220rpx;
+				line-height: 200rpx;
 				font-size: 48rpx;
 				color: #2459A6;
 				border-radius: 50%;
 				background: #BEDFF2;
+				margin-right: 40rpx;
 
-				&:first-child {
-					margin-right: 40rpx;
+				&:last-child {
+					margin-right: 0;
 				}
 			}
 		}
