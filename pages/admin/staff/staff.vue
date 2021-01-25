@@ -1,5 +1,5 @@
 <template>
-	<view class="staff">
+	<view class="staff" v-if="staffList.length>0">
 		<view class="staff-box" v-for="(item,index) in staffList" :key="index" @click="jumpPerformance(item.staff_id)">{{item.staff_name}}</view>
 	</view>
 </template>
@@ -8,39 +8,18 @@
 	export default {
 		data() {
 			return {
-				staffList: [{
-						staff_id: 1,
-						staff_name: '李白1'
-					},
-					{
-						staff_id: 2,
-						staff_name: '李白2'
-					},
-					{
-						staff_id: 3,
-						staff_name: '李白3'
-					}, {
-						staff_id: 4,
-						staff_name: '李白4'
-					},
-					{
-						staff_id: 5,
-						staff_name: '李白5'
-					},
-					{
-						staff_id: 6,
-						staff_name: '李白6'
-					}
-				]
+				staffList: []
 			}
 		},
 		methods: {
 			getStaffList() {
 				this.$http('/wechat_api/admin/staffs', {}).then(res => {
-					console.log(123, res)
+					if(res.data.code===0){
+						this.staffList = res.data.data
+					}
 				})
 			},
-			jumpPerformance(id){
+			jumpPerformance(id) {
 				uni.navigateTo({
 					url: `/pages/admin/performance/performance?id=${id}`,
 					success: () => {}
@@ -53,6 +32,19 @@
 	}
 </script>
 
-<style>
+<style scoped lang="less">
+	.staff {
+		padding: 40rpx 0;
 
+		.staff-box {
+			font-size: 36rpx;
+			height: 80rpx;
+			line-height: 80rpx;
+			background: #1D82FE;
+			color: #fff;
+			text-align: center;
+			padding: 0 40rpx;
+			border-bottom: 4rpx solid #FFFFFF;
+		}
+	}
 </style>

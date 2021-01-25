@@ -30,7 +30,7 @@
 							<view class="list-member-name">车主姓名：{{item.member_name}}</view>
 							<view class="list-next-oil">下次换油日期：{{item.next_oil_change_time}}</view>
 							<view class="list-box-btn">
-								<view class="list-order-time">订单状态：{{item.order_status==1?'待分配':item.order_status==2?'已分配':item.order_status==3?'已支付':''}}</view>
+								<view class="list-order-time">订单状态：{{item.order_status==1?'待分配':item.order_status==2?'已分配':item.order_status==3?'已支付':item.order_status==5?'已评价':''}}</view>
 							</view>
 						</div>
 					</div>
@@ -103,8 +103,9 @@
 					order_info.staff_name = this.listData[index].staff_name
 					order_info.order_type = this.listData[index].order_type
 					order_info.order_no = this.listData[index].order_no
+					order_info.score = this.listData[index].comment_num
 					let tmp_order_info = encodeURIComponent(JSON.stringify(order_info))
-					url = `/pages/index/index?order_no=${id}&status=${status}&order_info=${tmp_order_info}`
+					url = `/pages/index/index?order_no=${id}&status=${status}&order_info=${tmp_order_info}&order_score=${order_info.score}`
 				} else {
 					url = "/pages/index/index"
 				}

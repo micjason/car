@@ -14,8 +14,7 @@
   -webkit-justify-content: space-between;
           justify-content: space-between;
   padding: 0 64rpx 0 54rpx;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
   color: #FFFFFF;
   font-size: 26rpx;
 }
@@ -193,8 +192,7 @@
   width: 50rpx;
   height: 50rpx;
   background: #D33E5A;
-  -webkit-border-radius: 4rpx;
-          border-radius: 4rpx;
+  border-radius: 4rpx;
   text-align: center;
   line-height: 50rpx;
   font-size: 32rpx;
@@ -258,8 +256,7 @@
   -webkit-flex-basis: 239rpx;
           flex-basis: 239rpx;
   padding-left: 19rpx;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
 }
 .content .basic-info .info-picture .info-picture-right.data-v-57280228 {
   display: -webkit-box;
@@ -323,8 +320,7 @@
 .content .basic-info .info-picture .info-picture-right .info-picture-box .picture-delete.data-v-57280228 {
   width: 32rpx;
   height: 32rpx;
-  -webkit-border-radius: 50%;
-          border-radius: 50%;
+  border-radius: 50%;
   background: #FFFFFF;
   position: absolute;
   top: -16rpx;
@@ -447,8 +443,7 @@
   color: #868590;
   line-height: 46rpx;
   background: #F5F5F8;
-  -webkit-border-radius: 8px;
-          border-radius: 8px;
+  border-radius: 8px;
   display: -webkit-box;
   display: -webkit-flex;
   display: flex;
@@ -597,8 +592,31 @@
   font-family: PingFang SC;
   font-weight: 500;
   color: #FFFFFF;
+  position: relative;
+}
+.content .result .result-btn .select-score.data-v-57280228 {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  top: 0;
+  left: 0;
+}
+.content .result .result-btn .select-score .hide-pick-scor.data-v-57280228 {
+  line-height: 102rpx;
 }
 .content .result .result-btn.result-submit.data-v-57280228 {
   border-right: 10rpx solid #3B3B3D;
+}
+.content .result .result-btn-complete.data-v-57280228 {
+  width: 180rpx;
+  height: 102rpx;
+  line-height: 102rpx;
+  text-align: center;
+  background: #8aaf92;
+  font-size: 30rpx;
+  font-family: PingFang SC;
+  font-weight: 500;
+  color: #FFFFFF;
 }
 

@@ -227,9 +227,16 @@
 					</view>
 				</view>
 			</view>
-			<view class="result-btn" @click.stop='doSubmit($event)' v-if="type==1&&order_status!=3">提交</view>
-			<view class="result-btn result-submit" @click.stop='doSubmit($event)' v-if="type==2&&order_status!=3">提交修改</view>
+			<view class="result-btn" @click.stop='doSubmit($event)' v-if="type==1&&(order_status==1||order_status==2)">提交</view>
+			<view class="result-btn result-submit" @click.stop='doSubmit($event)' v-if="type==2&&(order_status==1||order_status==2)">提交修改</view>
 			<view class="result-btn" @click.stop='docomplete($event)' v-if="type==2&&order_status==2">订单完成</view>
+			<view class="result-btn" v-if="type==1&&order_status==3">
+				点击评分
+				<picker class="select-score" mode='selector' :range="range" value="" @change="bindScoreChange">
+					<view class="hide-pick-score">评分</view>
+				</picker>
+			</view>
+			<view class="result-btn-complete" v-if="type==1&&order_status==5">评分：{{score}}分</view>
 		</view>
 	</view>
 </template>
@@ -251,7 +258,7 @@
 			},
 			canWrite() {
 				let result = true
-				if (this.order_status == 3) {
+				if (this.order_status == 3 || this.order_status == 5) {
 					result = false
 				}
 				return result
@@ -287,7 +294,10 @@
 				order_origin_img: [],
 				maintenance_mileage_number: '',
 				location: '',
-				order_info:{}
+				order_info:{},
+				score:11,
+				rangeIndex:0,
+				range:['10分','9分','8分','7分','6分','5分','4分','3分','2分','1分']
 			}
 		},
 		mounted() {
@@ -295,11 +305,12 @@
 			this.getAllProject()
 		},
 		onLoad(options) {
-			console.log(12312312312, options)
+			console.log('options',options)
 			if (Object.keys(options).length > 0) {
 				this.detail = true
 				this.order_no = options.order_no
 				this.order_status = Number(options.status)
+				this.score = options.order_score
 				this.getdetailInfo(options.order_no)
 				this.order_info = JSON.parse(decodeURIComponent(options.order_info));
 			}
@@ -410,7 +421,6 @@
 				});
 			},
 			openMap() { //点击地图
-			console.log('this.$store.state.type',this.$store.state.type)
 				if ((this.order_status == 3 && this.$store.state.type == 1) || this.$store.state.type == 2) {
 					uni.openLocation({
 						latitude: this.latitude,
@@ -632,17 +642,16 @@
 				}).then(res1 => {
 					if (res1.data.code == 0) {
 						_this.next_oil_change_time = res1.data.data.next_oil_change_time || ''
-						console.log(222,_this.next_oil_change_time)
 						_this.order_delivery_time = res1.data.data.order_delivery_time || ''
 						_this.maintenance_mileage_number = res1.data.data.maintenance_mileage_number || ''
 						_this.longitude = res1.data.data.longitude || ''
 						_this.latitude = res1.data.data.latitude || ''
 						_this.location = res1.data.data.order_address || ''
 						_this.result = res1.data.data.order_money || ''
+						
 						let tmp_img_list = res1.data.data.order_img==''?[]:res1.data.data.order_img.split(',')
 						let tmp_img_result = []
 						let tmp_img_result2 = []
-						console.log('tmp_img_list', tmp_img_list)
 						if (tmp_img_list && tmp_img_list.length > 0) {
 							tmp_img_list.map(item => {
 								tmp_img_result.push(apiUrl + item)
@@ -842,6 +851,30 @@
 									uni.navigateBack({
 									    delta: 1
 									});
+								}, 1000)
+							}
+						});
+					}
+				})
+			},
+			bindScoreChange(e){
+				const _this = this
+				let value = this.range[parseInt(e.detail.value)]
+				let num = value.substring(0,value.length-1)
+
+				_this.$http('/wechat_api/admin/comment',{
+					order_no:_this.order_info.order_no,
+					num
+				}).then(res=>{
+					if(res.data.code === 0){
+						uni.showToast({
+							icon: 'none',
+							title: '评分成功',
+							duration: 1000,
+							mask: true,
+							success: () => {
+								setTimeout(function() {
+									_this.score = num
 								}, 1000)
 							}
 						});
@@ -1374,10 +1407,36 @@
 				font-family: PingFang SC;
 				font-weight: 500;
 				color: #FFFFFF;
+				position: relative;
+				
+				.select-score {
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					opacity: 0;
+					top: 0;
+					left: 0;
+					
+					.hide-pick-scor {
+						line-height: 102rpx;
+					}
+				}
 				
 				&.result-submit {
 					border-right: 10rpx solid #3B3B3D;
 				}
+			}
+			
+			.result-btn-complete {
+				width: 180rpx;
+				height: 102rpx;
+				line-height: 102rpx;
+				text-align: center;
+				background: #8aaf92;
+				font-size: 30rpx;
+				font-family: PingFang SC;
+				font-weight: 500;
+				color: #FFFFFF;
 			}
 		}
 	}
