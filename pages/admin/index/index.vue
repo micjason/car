@@ -31,7 +31,7 @@
 .admin {
 	width: 100%;
 	height: 100vh;
-	background: #c1d7ec;
+	background: #e0e6ea;
 	display: flex;
 	flex-direction: column;
 	align-items: center;

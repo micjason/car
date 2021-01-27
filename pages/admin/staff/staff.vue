@@ -37,9 +37,9 @@
 		padding: 40rpx 0;
 
 		.staff-box {
-			font-size: 36rpx;
-			height: 80rpx;
-			line-height: 80rpx;
+			font-size: 40rpx;
+			height: 100rpx;
+			line-height: 100rpx;
 			background: #1D82FE;
 			color: #fff;
 			text-align: center;

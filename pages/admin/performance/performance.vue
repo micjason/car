@@ -86,7 +86,7 @@
 					time: this.time
 				}).then(res => {
 					if(res.data.code===0){
-						
+						this.performanceList = res.data.data
 					}
 					this.performanceList = [{
 						staff_id: 1,
