@@ -390,16 +390,11 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-
-
-
-
-
 var _util = __webpack_require__(/*! @/static/js/util.js */ 45);
 
 
 
-var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 12));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var ruiDatePicker = function ruiDatePicker() {Promise.all(/*! require.ensure | components/rattenking-dtpicker/rattenking-dtpicker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/rattenking-dtpicker/rattenking-dtpicker")]).then((function () {return resolve(__webpack_require__(/*! @/components/rattenking-dtpicker/rattenking-dtpicker.vue */ 89));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
+var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 12));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var ruiDatePicker = function ruiDatePicker() {Promise.all(/*! require.ensure | components/rattenking-dtpicker/rattenking-dtpicker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/rattenking-dtpicker/rattenking-dtpicker")]).then((function () {return resolve(__webpack_require__(/*! @/components/rattenking-dtpicker/rattenking-dtpicker.vue */ 91));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
 {
   computed: {
     startDate: function startDate() {
@@ -410,7 +405,7 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
     },
     canWrite: function canWrite() {
       var result = true;
-      if (this.order_status == 3 || this.order_status == 5) {
+      if (this.order_status == 3 || this.order_status == 5 || this.type == 3) {
         result = false;
       }
       return result;
@@ -431,7 +426,6 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
       ids: [],
       next_oil_change_time: '',
       order_delivery_time: '',
-      settle_time: '',
       submit: [],
       detail: false,
       order_no: '',
@@ -449,7 +443,8 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
       order_info: {},
       score: 11,
       rangeIndex: 0,
-      range: ['10分', '9分', '8分', '7分', '6分', '5分', '4分', '3分', '2分', '1分'] };
+      range: ['10分', '9分', '8分', '7分', '6分', '5分', '4分', '3分', '2分', '1分'],
+      from: '' };
 
   },
   mounted: function mounted() {
@@ -463,6 +458,7 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
       this.order_no = options.order_no;
       this.order_status = Number(options.status);
       this.score = options.order_score;
+      this.from = options.from || '';
       this.getdetailInfo(options.order_no);
       this.order_info = JSON.parse(decodeURIComponent(options.order_info));
     }
@@ -603,7 +599,6 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
       this.next_oil_change_time = '';
       this.order_delivery_time = '';
       this.maintenance_mileage_number = '';
-      this.settle_time = '';
       this.submit = [];
     },
     bindNextChange: function bindNextChange(e) {
@@ -611,9 +606,6 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
     },
     bindSendChange: function bindSendChange(e) {
       this.order_delivery_time = e;
-    },
-    bindDoneChange: function bindDoneChange(e) {
-      this.settle_time = e.detail.value;
     },
     // 获取基本信息
     getBasicInfo: function getBasicInfo() {
@@ -787,11 +779,23 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
     // 获取订单详情信息
     getdetailInfo: function getdetailInfo(id) {
       var _this = this;
-      _this.$http('/wechat_api/order/order_detail', {
-        order_no: id,
-        member_id: _this.$store.state.member_id,
-        type: _this.$store.state.type }).
-      then(function (res1) {
+      console.log('this.from', this.from);
+      var postData = {};
+      var postUrl = '';
+      if (_this.from == '123') {
+        postData = {
+          order_no: id };
+
+        postUrl = '/wechat_api/admin/order_detail';
+      } else {
+        postData = {
+          order_no: id,
+          member_id: _this.$store.state.member_id,
+          type: _this.$store.state.type };
+
+        postUrl = '/wechat_api/order/order_detail';
+      }
+      _this.$http(postUrl, postData).then(function (res1) {
         if (res1.data.code == 0) {
           _this.next_oil_change_time = res1.data.data.next_oil_change_time || '';
           _this.order_delivery_time = res1.data.data.order_delivery_time || '';

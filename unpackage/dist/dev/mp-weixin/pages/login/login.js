@@ -147,6 +147,29 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 12));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };} //
 //
 //
@@ -163,24 +186,73 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
 //
 //
 //
-var _default = { data: function data() {return { phone: '', phoneError: false, password: '', passwordError: false, identify: 1 };}, onLoad: function onLoad(option) {console.log('option', option);if (option) {this.identify = parseInt(option.type);}},
-  methods: {
-    handleBind: function handleBind() {
-      var _this = this;
-      if (!_this.judgePhone(_this.phone)) {
-        _this.phoneError = true;
-        return false;
-      } else {
-        _this.phoneError = false;
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+var _default = { data: function data() {return { phone: '', phoneError: false, password: '', passwordError: false, identify: 1, username: '', v_num: '', vid: '', company: '', carArray: [], carIndex: 0 };}, onLoad: function onLoad(option) {console.log('option', option);if (option) {this.identify = parseInt(option.type);}}, created: function created() {this.getCarList();}, methods: { handleBind: function handleBind() {var _this = this;if (!_this.judgePhone(_this.phone)) {_this.phoneError = true;return false;} else {_this.phoneError = false;}if (this.identify == 1) {if (_this.username == '') {uni.showToast({ icon: 'none', title: '用户名不能为空',
+            duration: 2000 });
+
+          return;
+        }
+        if (_this.v_num == '') {
+          uni.showToast({
+            icon: 'none',
+            title: '车牌号不能为空',
+            duration: 2000 });
+
+          return;
+        }
+        if (_this.vid == '') {
+          uni.showToast({
+            icon: 'none',
+            title: '车型不能为空',
+            duration: 2000 });
+
+          return;
+        }
+      }
+
+      var postData = {
+        openid: _this.$store.state.openid,
+        type: _this.identify,
+        phone: _this.phone };
+
+
+      if (this.identify == 1) {
+        postData = {
+          openid: _this.$store.state.openid,
+          type: _this.identify,
+          phone: _this.phone,
+          username: _this.username,
+          v_num: _this.v_num,
+          vid: _this.vid,
+          company: _this.company };
+
       }
       if (!_this.phoneError) {
         wx.request({
           url: _api.default + '/wechat_api/login/login',
-          data: {
-            openid: _this.$store.state.openid,
-            type: _this.identify,
-            phone: _this.phone },
-
+          data: postData,
           header: {
             'content-type': 'application/json' },
 
@@ -198,6 +270,10 @@ var _default = { data: function data() {return { phone: '', phoneError: false, p
                 success: function success() {
                   _this.phone = '';
                   _this.phoneError = false;
+                  _this.username = '';
+                  _this.v_num = '';
+                  _this.vid = '';
+                  _this.company = '';
                 } });
 
             } else {
@@ -250,6 +326,18 @@ var _default = { data: function data() {return { phone: '', phoneError: false, p
         result = false;
       }
       return result;
+    },
+    getCarList: function getCarList() {var _this2 = this;
+      this.$http('/wechat_api/login/getVTypes', {}).then(function (res) {
+        if (res.data.code === 0) {
+          _this2.carArray = res.data.data;
+        }
+      });
+    },
+    bindCarChange: function bindCarChange(e) {
+      console.log(123321, e);
+      this.carIndex = e.detail.value;
+      this.vid = this.carArray[this.carIndex].id;
     } } };exports.default = _default;
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./node_modules/@dcloudio/uni-mp-weixin/dist/index.js */ 1)["default"]))
 

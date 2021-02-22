@@ -7,6 +7,7 @@
 				<picker class="select-date" mode="date" value="" fields="month" :start="startDate" :end="endDate" @change="bindNextChange">
 					<view class="hide-pick-time">{{time}}</view>
 				</picker>
+				<view class="triangle"></view>
 			</view>
 		</view>
 
@@ -55,15 +56,12 @@
 		},
 		data() {
 			return {
-				id: '',
 				time: '',
 				performanceList: []
 			}
 		},
-		onLoad: function(option) {
-			if (option) {
-				this.id = parseInt(option.id)
-			}
+		onLoad: function() {
+			
 		},
 		created() {
 			let date = new Date()
@@ -82,25 +80,24 @@
 			// *int      comment_num    订单平均分
 			getPerformance() {
 				this.$http('/wechat_api/admin/staffMoney', {
-					staff_id: this.id,
 					time: this.time
 				}).then(res => {
 					if(res.data.code===0){
 						this.performanceList = res.data.data
 					}
-					this.performanceList = [{
-						staff_id: 1,
-						staff_name: '李白',
-						order_num: 100,
-						all_money: 3000,
-						comment_num: 60
-					},{
-						staff_id: 12,
-						staff_name: '李白李白李白李白李白李白李白李白',
-						order_num: 100,
-						all_money: 3000,
-						comment_num: 60
-					}]
+					// this.performanceList = [{
+					// 	staff_id: 1,
+					// 	staff_name: '李白',
+					// 	order_num: 100,
+					// 	all_money: 3000,
+					// 	comment_num: 60
+					// },{
+					// 	staff_id: 12,
+					// 	staff_name: '李白李白李白李白李白李白李白李白',
+					// 	order_num: 100,
+					// 	all_money: 3000,
+					// 	comment_num: 60
+					// }]
 				})
 			},
 			bindNextChange(e) {
@@ -124,6 +121,7 @@
 
 			.select-btn {
 				position: relative;
+				padding-right: 40rpx;
 
 				.select-date {
 					position: absolute;
@@ -132,10 +130,21 @@
 					opacity: 0;
 					width: 100%;
 					height: 100%;
+					z-index: 10;
 
 					.hide-pick-time {
 						line-height: 80rpx;
 					}
+				}
+				
+				.triangle{
+					position: absolute;
+					width: 0;
+					height: 0;
+					right: 0;
+					top: 33rpx;
+					border: 14rpx solid;
+					border-color: #000 transparent transparent;
 				}
 			}
 		}

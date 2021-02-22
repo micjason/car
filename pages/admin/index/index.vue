@@ -20,7 +20,7 @@
 			},
 			jumpStaff(){
 				uni.navigateTo({
-					url:'/pages/admin/staff/staff'
+					url:'/pages/admin/performance/performance'
 				})
 			},
 		}

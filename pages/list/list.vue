@@ -99,7 +99,6 @@
 				let url = ''
 				if (id) {
 					let order_info = {}
-					order_info.settle_time = this.listData[index].settle_time
 					order_info.staff_name = this.listData[index].staff_name
 					order_info.order_type = this.listData[index].order_type
 					order_info.order_no = this.listData[index].order_no

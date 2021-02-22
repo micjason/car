@@ -65,7 +65,8 @@
 						里程
 					</view>
 					<view class="info-value">
-						<input type="text" :disabled="canWrite?false:true" @input="getMile" :value="maintenance_mileage_number" placeholder="请输入里程">
+						<input type="text" :disabled="canWrite?false:true" @input="getMile" :value="maintenance_mileage_number"
+						 placeholder="请输入里程">
 					</view>
 				</view>
 			</view>
@@ -98,7 +99,7 @@
 						 @change="bindNextChange">
 							<view class="hide-pick-time">下次换油日期</view>
 						</picker>
-						
+
 					</view>
 				</view>
 			</view>
@@ -116,14 +117,8 @@
 							<image src="../../static/image/arrow.png"></image>
 						</view>
 
-						<ruiDatePicker
-							class="hide-pick"
-						    fields="hour"
-						    start="2010-00-00 00"
-						    end="2030-12-30 23"
-						    :value="order_delivery_time"
-						    @change="bindSendChange"
-						></ruiDatePicker>
+						<ruiDatePicker class="hide-pick" fields="hour" start="2010-00-00 00" end="2030-12-30 23" :value="order_delivery_time"
+						 @change="bindSendChange"></ruiDatePicker>
 					</view>
 				</view>
 			</view>
@@ -227,8 +222,8 @@
 					</view>
 				</view>
 			</view>
-			<view class="result-btn" @click.stop='doSubmit($event)' v-if="type==1&&(order_status==1||order_status==2)">提交</view>
-			<view class="result-btn result-submit" @click.stop='doSubmit($event)' v-if="type==2&&(order_status==1||order_status==2)">提交修改</view>
+			<view class="result-btn" @click.stop='doSubmit($event)' v-if="type==1&&order_status!=3&&order_status!=5">提交</view>
+			<view class="result-btn result-submit" @click.stop='doSubmit($event)' v-if="type==2&&order_status!=3&&order_status!=5">提交修改</view>
 			<view class="result-btn" @click.stop='docomplete($event)' v-if="type==2&&order_status==2">订单完成</view>
 			<view class="result-btn" v-if="type==1&&order_status==3">
 				点击评分
@@ -258,7 +253,7 @@
 			},
 			canWrite() {
 				let result = true
-				if (this.order_status == 3 || this.order_status == 5) {
+				if (this.order_status == 3 || this.order_status == 5 || this.type ==3) {
 					result = false
 				}
 				return result
@@ -267,7 +262,7 @@
 				return this.$store.state.type
 			}
 		},
-		components:{
+		components: {
 			ruiDatePicker
 		},
 		data() {
@@ -279,7 +274,6 @@
 				ids: [],
 				next_oil_change_time: '',
 				order_delivery_time: '',
-				settle_time: '',
 				submit: [],
 				detail: false,
 				order_no: '',
@@ -294,10 +288,11 @@
 				order_origin_img: [],
 				maintenance_mileage_number: '',
 				location: '',
-				order_info:{},
-				score:11,
-				rangeIndex:0,
-				range:['10分','9分','8分','7分','6分','5分','4分','3分','2分','1分']
+				order_info: {},
+				score: 11,
+				rangeIndex: 0,
+				range: ['10分', '9分', '8分', '7分', '6分', '5分', '4分', '3分', '2分', '1分'],
+				from: ''
 			}
 		},
 		mounted() {
@@ -305,12 +300,13 @@
 			this.getAllProject()
 		},
 		onLoad(options) {
-			console.log('options',options)
+			console.log('options', options)
 			if (Object.keys(options).length > 0) {
 				this.detail = true
 				this.order_no = options.order_no
 				this.order_status = Number(options.status)
 				this.score = options.order_score
+				this.from = options.from || ''
 				this.getdetailInfo(options.order_no)
 				this.order_info = JSON.parse(decodeURIComponent(options.order_info));
 			}
@@ -327,8 +323,8 @@
 			});
 		},
 		methods: {
-			getMile(e){
-				console.log(123,e)
+			getMile(e) {
+				console.log(123, e)
 				this.maintenance_mileage_number = e.detail.value
 			},
 			chooseImage() {
@@ -451,7 +447,6 @@
 				this.next_oil_change_time = ''
 				this.order_delivery_time = ''
 				this.maintenance_mileage_number = ''
-				this.settle_time = ''
 				this.submit = []
 			},
 			bindNextChange(e) {
@@ -460,15 +455,12 @@
 			bindSendChange(e) {
 				this.order_delivery_time = e
 			},
-			bindDoneChange(e) {
-				this.settle_time = e.detail.value
-			},
 			// 获取基本信息
 			getBasicInfo() {
 				const _this = this
 				_this.$http('/wechat_api/order/get_member_information', {
 					'openid': _this.$store.state.openid,
-					'type':_this.$store.state.type
+					'type': _this.$store.state.type
 				}).then(res => {
 					if (res.data.code == 0) {
 						_this.memberInfo = res.data.data
@@ -635,11 +627,23 @@
 			// 获取订单详情信息
 			getdetailInfo(id) {
 				const _this = this
-				_this.$http('/wechat_api/order/order_detail', {
-					order_no: id,
-					member_id: _this.$store.state.member_id,
-					type: _this.$store.state.type
-				}).then(res1 => {
+				console.log('this.from', this.from)
+				let postData = {}
+				let postUrl = ''
+				if (_this.from == '123') {
+					postData = {
+						order_no: id,
+					}
+					postUrl = '/wechat_api/admin/order_detail'
+				} else {
+					postData = {
+						order_no: id,
+						member_id: _this.$store.state.member_id,
+						type: _this.$store.state.type
+					}
+					postUrl = '/wechat_api/order/order_detail'
+				}
+				_this.$http(postUrl, postData).then(res1 => {
 					if (res1.data.code == 0) {
 						_this.next_oil_change_time = res1.data.data.next_oil_change_time || ''
 						_this.order_delivery_time = res1.data.data.order_delivery_time || ''
@@ -648,8 +652,8 @@
 						_this.latitude = res1.data.data.latitude || ''
 						_this.location = res1.data.data.order_address || ''
 						_this.result = res1.data.data.order_money || ''
-						
-						let tmp_img_list = res1.data.data.order_img==''?[]:res1.data.data.order_img.split(',')
+
+						let tmp_img_list = res1.data.data.order_img == '' ? [] : res1.data.data.order_img.split(',')
 						let tmp_img_result = []
 						let tmp_img_result2 = []
 						if (tmp_img_list && tmp_img_list.length > 0) {
@@ -751,8 +755,8 @@
 					mask: true
 				});
 
-				let time = (new Date(this.next_oil_change_time ).getTime()) / 1000 || ''
-				let time2 = (new Date(this.order_delivery_time+':00:00').getTime()) / 1000 || ''
+				let time = (new Date(this.next_oil_change_time).getTime()) / 1000 || ''
+				let time2 = (new Date(this.order_delivery_time + ':00:00').getTime()) / 1000 || ''
 				let order_detail = []
 
 				if (this.projectArray.length > 0) {
@@ -814,7 +818,7 @@
 					post_data.order_img = _this.order_origin_img.join(',')
 					post_data.order_address = _this.location
 				}
-				_this.$http(post_url, post_data,'POST').then(res => {
+				_this.$http(post_url, post_data, 'POST').then(res => {
 					if (res.data.code == 0) {
 						uni.showToast({
 							icon: 'none',
@@ -824,7 +828,7 @@
 							success: () => {
 								setTimeout(function() {
 									uni.navigateBack({
-									    delta: 1
+										delta: 1
 									});
 								}, 1000)
 							}
@@ -849,7 +853,7 @@
 							success: () => {
 								setTimeout(function() {
 									uni.navigateBack({
-									    delta: 1
+										delta: 1
 									});
 								}, 1000)
 							}
@@ -857,16 +861,16 @@
 					}
 				})
 			},
-			bindScoreChange(e){
+			bindScoreChange(e) {
 				const _this = this
 				let value = this.range[parseInt(e.detail.value)]
-				let num = value.substring(0,value.length-1)
+				let num = value.substring(0, value.length - 1)
 
-				_this.$http('/wechat_api/admin/comment',{
-					order_no:_this.order_info.order_no,
+				_this.$http('/wechat_api/admin/comment', {
+					order_no: _this.order_info.order_no,
 					num
-				}).then(res=>{
-					if(res.data.code === 0){
+				}).then(res => {
+					if (res.data.code === 0) {
 						uni.showToast({
 							icon: 'none',
 							title: '评分成功',
@@ -992,7 +996,7 @@
 				width: 100%;
 				height: 94rpx;
 			}
-			
+
 			/deep/ .hide-pick-next {
 				width: 100%;
 				height: 98rpx;
@@ -1408,7 +1412,7 @@
 				font-weight: 500;
 				color: #FFFFFF;
 				position: relative;
-				
+
 				.select-score {
 					position: absolute;
 					width: 100%;
@@ -1416,17 +1420,17 @@
 					opacity: 0;
 					top: 0;
 					left: 0;
-					
+
 					.hide-pick-scor {
 						line-height: 102rpx;
 					}
 				}
-				
+
 				&.result-submit {
 					border-right: 10rpx solid #3B3B3D;
 				}
 			}
-			
+
 			.result-btn-complete {
 				width: 180rpx;
 				height: 102rpx;

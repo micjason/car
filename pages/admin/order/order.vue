@@ -9,15 +9,15 @@
 
 		<view class="search-main">
 			<view class="search-wrapper">
-				<input class="search-input" placeholder="请输入员工id" @input="getInput($event,'staff_id')" />
+				<input class="search-input" placeholder="请输入员工姓名" @input="getInput($event,'staff_id')" />
 			</view>
 
 			<view class="search-wrapper">
-				<input class="search-input" placeholder="请输入客户id" @input="getInput($event,'member_id')" />
+				<input class="search-input" placeholder="请输入客户姓名" @input="getInput($event,'member_id')" />
 			</view>
 
 			<view class="search-wrapper">
-				<input class="search-input" placeholder="请输入车牌号id" @input="getInput($event,'vehicle_id')" />
+				<input class="search-input" placeholder="请输入车牌号" @input="getInput($event,'vehicle_id')" />
 			</view>
 
 			<view class="search-wrapper">
@@ -29,7 +29,7 @@
 				<radio-group class="radio-wrapper" @change="radioChange">
 					<label class="label-wrapper" v-for="(item, index) in order_type" :key="item.value">
 						<view>
-							<radio :value="item.value" :checked="index === current" />
+							<radio :value="item.value" :checked="(index+1) === current" />
 						</view>
 						<view>{{item.name}}</view>
 					</label>
@@ -46,7 +46,7 @@
 				</view>
 			</view>
 
-			<view class="search-submit" @click="getListData">
+			<view class="search-submit" @click="doSearch">
 				点击查询
 				<img src="../../../static/image/search.png" alt="">
 			</view>
@@ -63,18 +63,30 @@
 					<div class="list-scroll-content">
 						<div class="list-scroll-box" v-for="(item,index) in listData" :key="index">
 							<view :class="['list-order-no',item.order_type==1?'':'carry']">{{item.order_type==1?'预约单号':'承接单号'}}：
-								<text class="list-order-no-num">{{item.order_no}}</text>
+								<text class="list-order-no-num" @click="jumpDetail($event,item.order_no,item.order_status,index)">{{item.order_no}}</text>
+								<img class="list-spread" @click="doSpread(index)" v-if="item.spread" src="../../../static/image/spread.png" alt="">
+								<img class="list-spread" @click="doSpread(index)" v-else src="../../../static/image/right.png" alt="">
 							</view>
-							<view class="list-order-wrapper">
+							<view class="list-order-wrapper" v-if="item.spread" @click="jumpDetail($event,item.order_no,item.order_status,index)">
 								<view class="list-order-important">订单价格：{{item.order_money}}</view>
 								<view class="list-order-important">订单时间：{{format(item.order_delivery_time)}}</view>
-								<view class="list-order-common">订单评分：{{item.comment_num}}</view>
+								<view v-if="active!==1" class="list-order-common">订单评分：{{item.comment_num}}</view>
 								<view class="list-order-common">客户姓名：{{item.member_name}}</view>
-								<view class="list-order-common">员工姓名：{{item.staff_name}}</view>
+								<view v-if="active!==1" class="list-order-common">员工姓名：{{item.staff_name}}</view>
 								<view class="list-order-common">车牌号：{{item.vehicle_number}}</view>
-								<view class="list-order-common">评论分数：{{item.comment_num}}</view>
-								<view class="list-order-common">订单里程：{{item.maintenance_mileage_number}}</view>
+								<view v-if="active!==1" class="list-order-common">评论分数：{{item.comment_num}}</view>
+								<view v-if="active!==1" class="list-order-common">订单里程：{{item.maintenance_mileage_number}}</view>
 								<view class="list-order-common list-order-location">定位信息：{{item.order_address}}</view>
+							</view>
+							<view class="list-handle-wrapper">
+								<view v-if="active===1" class="list-handle">
+									去分配
+									<picker class="staff-pick" @change="selectStaff($event,item.order_no)" :value="staffIndex" :range="staffArray"
+									 range-key="staff_name">
+										<view class="staff-pick-text">选员工</view>
+									</picker>
+								</view>
+
 							</view>
 						</div>
 					</div>
@@ -113,7 +125,8 @@
 				member_id: '',
 				vehicle_id: '',
 				time: '',
-				order_no: ''
+				order_no: '',
+				staffArray: []
 			}
 		},
 		computed: {
@@ -140,28 +153,30 @@
 			if (option) {
 				this.identify = parseInt(option.type)
 			}
+			this.getStaff()
 		},
 		created() {
-			// let date = new Date()
-			// let year = date.getFullYear();
-			// let month = date.getMonth() + 1;
-			// this.time = year + '-' + month
-		},
-		mounted() {
-
+			let date = new Date()
+			let year = date.getFullYear();
+			let month = date.getMonth() + 1;
+			this.time = year + '-' + month
 		},
 		onShow() {
 			this.init()
 			this.getListData()
 		},
 		methods: {
-			format(date){
-				return formatDate(parseInt(date)*1000)
+			format(date) {
+				return formatDate(parseInt(date) * 1000)
 			},
 			init() {
 				this.listData = null
 				this.pageIndex = 1
 				this.total = 0
+			},
+			doSearch() {
+				this.init()
+				this.getListData()
 			},
 			getListData(status) {
 				const that = this
@@ -181,7 +196,7 @@
 					'member_id': that.member_id,
 					'vehicle_id': that.vehicle_id,
 					'status': that.status,
-					'type': that.current==-1?'':that.order_type[that.current].value,
+					'type': that.current == -1 ? '' : that.order_type[that.current - 1].value,
 					'time': that.time,
 					'order_no': that.order_no
 				}
@@ -224,6 +239,65 @@
 			},
 			bindTimeChange(e) {
 				this.time = e.detail.value
+			},
+			doSpread(index) {
+				this.listData[index].spread = this.listData[index].spread ? false : true
+				this.$forceUpdate();
+			},
+			getStaff() {
+				this.$http('/wechat_api/admin/staffs', {}).then(res => {
+					if (res.data.code === 0) {
+						this.staffArray = res.data.data
+					}
+				})
+			},
+			selectStaff(e, no) {
+				const _this = this
+				let index = parseInt(e.detail.value)
+				let id = _this.staffArray[index].staff_id
+				let name = _this.staffArray[index].staff_name
+				uni.showModal({
+				    title: '提示',
+				    content: `是否确认分配给${name}`,
+				    success: function (res) {
+				        if (res.confirm) {
+				            console.log('用户点击确定');
+							_this.$http('/wechat_api/admin/assignStaff', {
+								'order_no':no,
+								'staff_id':id
+							}).then(res => {
+								if (res.data.code === 1) {
+									uni.showToast({
+										icon: 'none',
+										title: '分配成功',
+										duration: 1000,
+										mask: true,
+										success: () => {
+											_this.init()
+											_this.getListData()
+										}
+									});
+								}
+							})
+				        } else if (res.cancel) {
+				            console.log('用户点击取消');
+				        }
+				    }
+				});
+			},
+			jumpDetail(e, id, status, index){
+				e.stopPropagation()
+				let order_info = {}
+				let url = ''
+				order_info.staff_name = this.listData[index].staff_name
+				order_info.order_type = this.listData[index].order_type
+				order_info.order_no = this.listData[index].order_no
+				order_info.score = this.listData[index].comment_num
+				let tmp_order_info = encodeURIComponent(JSON.stringify(order_info))
+				url = `/pages/index/index?order_no=${id}&status=${status}&order_info=${tmp_order_info}&order_score=${order_info.score}&from=123`
+				uni.navigateTo({
+					url
+				})
 			}
 		}
 	}
@@ -339,7 +413,7 @@
 					height: 80rpx;
 					line-height: 80rpx;
 					position: relative;
-					background:#768cfb;
+					border: 2rpx solid #bac2e8;
 					text-align: center;
 					border-radius: 16rpx;
 
@@ -365,10 +439,11 @@
 				display: flex;
 				align-items: center;
 				justify-content: center;
-				background-color: #5cb85c;
+				background-color: #1357a1;
 				margin-top: 20rpx;
 				font-size: 36rpx;
 				border-radius: 40rpx;
+				color: #fff;
 
 				img {
 					width: 44rpx;
@@ -397,7 +472,7 @@
 						padding: 0 40rpx;
 
 						.list-scroll-box {
-							margin-bottom: 60rpx;
+							margin-bottom: 30rpx;
 							font-size: 32rpx;
 							color: #000000;
 
@@ -426,33 +501,74 @@
 								.list-order-no-num {
 									color: #000000;
 								}
+
+								.list-spread {
+									position: absolute;
+									right: 0;
+									top: 0;
+									width: 30rpx;
+									height: 30rpx;
+									display: flex;
+									justify-content: center;
+									align-items: center;
+									padding: 25rpx;
+								}
 							}
-							
+
 							.list-order-wrapper {
 								display: flex;
 								flex-wrap: wrap;
-								
-								.list-order-important{
+
+								.list-order-important {
 									line-height: 70rpx;
 									flex: 0 0 50%;
 									box-sizing: border-box;
 									padding-right: 10rpx;
 								}
-								
+
 								.list-order-common {
 									color: #999999;
 									line-height: 60rpx;
 									flex: 0 0 50%;
 									box-sizing: border-box;
 									padding-right: 10rpx;
-									
+
 									&.list-order-location {
 										flex: 1;
 									}
 								}
 							}
 
-							
+							.list-handle-wrapper {
+								height: 66rpx;
+								display: flex;
+								justify-content: flex-end;
+
+								.list-handle {
+									height: 66rpx;
+									width: 168rpx;
+									background: #006280;
+									line-height: 66rpx;
+									text-align: center;
+									border-radius: 20rpx;
+									color: #fff;
+									position: relative;
+
+									.staff-pick {
+										position: absolute;
+										top: 0;
+										left: 0;
+										width: 100%;
+										height: 100%;
+										opacity: 0;
+
+										.staff-pick-text {
+											height: 66rpx;
+											line-height: 66rpx;
+										}
+									}
+								}
+							}
 						}
 					}
 				}
