@@ -77,6 +77,7 @@
 			}
 		},
 		onLoad: function(option) {
+			console.log(123,option)
 			if (option) {
 				this.identify = parseInt(option.type)
 			}

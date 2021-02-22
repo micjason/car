@@ -12,11 +12,11 @@
 		<template v-if="identify==1">
 			<view class="login-box">
 				<image src="../../static/image/user.png"></image>
-				<input type="number" v-model="username" placeholder="请输入用户名">
+				<input v-model="username" placeholder="请输入用户名">
 			</view>
 			<view class="login-box">
 				<image src="../../static/image/login/car2.png"></image>
-				<input type="number" v-model="v_num" placeholder="请输入车牌号">
+				<input v-model="v_num" placeholder="请输入车牌号">
 			</view>
 			<view class="login-box">
 				<image src="../../static/image/login/car1.png"></image>
@@ -28,7 +28,7 @@
 			</view>
 			<view class="login-box">
 				<image src="../../static/image/login/company2.png"></image>
-				<input type="number" v-model="company" placeholder="请输入公司名(选填)">
+				<input v-model="company" placeholder="请输入公司名(选填)">
 			</view>
 		</template>
 		<view class="login-btn" @click="handleBind">
@@ -118,6 +118,7 @@
 					}
 				}
 				if (!_this.phoneError) {
+					let type = this.type
 					wx.request({
 						url: apiUrl + '/wechat_api/login/login',
 						data: postData,
@@ -129,9 +130,9 @@
 								console.log('token', res.data.data.token)
 								_this.$store.commit('setToken', res.data.data.token)
 								_this.$store.commit('setMember', res.data.data.member_id)
-								let tmp_url = "/pages/list/list"
+								let tmp_url = "/pages/list/list?type=${type}"
 								if (_this.identify === 3) {
-									tmp_url = "/pages/admin/index/index"
+									tmp_url = "/pages/admin/index/index?type=${type}"
 								}
 								uni.navigateTo({
 									url: tmp_url,
