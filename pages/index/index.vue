@@ -222,7 +222,10 @@
 					</view>
 				</view>
 			</view>
-			<view class="result-btn" @click.stop='doSubmit($event)' v-if="type==1&&order_status!=3&&order_status!=5">提交</view>
+			<!-- <view class="result-btn" @click.stop='doSubmit($event)' v-if="type==1&&order_status!=3&&order_status!=5">提交</view> -->
+			<form bindsubmit="formSubmit" report-submit="true">
+			      <button class="result-btn" formType="submit">允许通知我</button>
+			</form>
 			<view class="result-btn result-submit" @click.stop='doSubmit($event)' v-if="type==2&&order_status!=3&&order_status!=5">提交修改</view>
 			<view class="result-btn" @click.stop='docomplete($event)' v-if="type==2&&order_status==2">订单完成</view>
 			<view class="result-btn" v-if="type==1&&order_status==3">
@@ -730,6 +733,28 @@
 					}
 				})
 			},
+			formSubmit(e) {
+			    let _this = this
+			    wx.request({
+			      url: "https://xxx/mobiletplus/index.php?act=login&op=send_wx",
+			      data: {
+			        "form_id": e.detail.formId,
+			        "access_token":_this.$store.state.token,
+			        "touser":_this.$store.state.openid,
+			        "template_id":'l0xzq4i-qbvpmhEL6q_RrfjiCn-qh5aO54qXEDkQ9f8'
+			      },
+			      method: 'POST',
+			      header: {
+			        'content-type': 'application/x-www-form-urlencoded'
+			      },
+			      success: function (res) {
+			        console.log('设置成功',res)
+			      },
+			      fail: function (e) {
+			        console.log('设置失败',e)
+			      }
+			    })
+			  },
 			doSubmit(e) {
 				e.stopPropagation()
 				const _this = this

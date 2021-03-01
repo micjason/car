@@ -209,7 +209,7 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
 //
 //
 //
-var _default = { data: function data() {return { phone: '', phoneError: false, password: '', passwordError: false, identify: 1, username: '', v_num: '', vid: '', company: '', carArray: [], carIndex: 0 };}, onLoad: function onLoad(option) {console.log('option', option);if (option) {this.identify = parseInt(option.type);}}, created: function created() {this.getCarList();}, methods: { handleBind: function handleBind() {var _this = this;if (!_this.judgePhone(_this.phone)) {_this.phoneError = true;return false;} else {_this.phoneError = false;}if (this.identify == 1) {if (_this.username == '') {uni.showToast({ icon: 'none', title: '用户名不能为空',
+var _default = { data: function data() {return { phone: '', phoneError: false, password: '', passwordError: false, type: 1, username: '', v_num: '', vid: '', company: '', carArray: [], carIndex: 0 };}, onLoad: function onLoad(option) {console.log('option', option);if (option) {this.type = parseInt(option.type);}}, created: function created() {this.getCarList();}, methods: { handleBind: function handleBind() {var _this = this;if (!_this.judgePhone(_this.phone)) {_this.phoneError = true;return false;} else {_this.phoneError = false;}if (this.type == 1) {if (_this.username == '') {uni.showToast({ icon: 'none', title: '用户名不能为空',
             duration: 2000 });
 
           return;
@@ -234,14 +234,14 @@ var _default = { data: function data() {return { phone: '', phoneError: false, p
 
       var postData = {
         openid: _this.$store.state.openid,
-        type: _this.identify,
+        type: _this.type,
         phone: _this.phone };
 
 
-      if (this.identify == 1) {
+      if (this.type == 1) {
         postData = {
           openid: _this.$store.state.openid,
-          type: _this.identify,
+          type: _this.type,
           phone: _this.phone,
           username: _this.username,
           v_num: _this.v_num,
@@ -263,7 +263,7 @@ var _default = { data: function data() {return { phone: '', phoneError: false, p
               _this.$store.commit('setToken', res.data.data.token);
               _this.$store.commit('setMember', res.data.data.member_id);
               var tmp_url = "/pages/list/list?type=${type}";
-              if (_this.identify === 3) {
+              if (_this.type === 3) {
                 tmp_url = "/pages/admin/index/index?type=${type}";
               }
               uni.navigateTo({

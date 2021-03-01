@@ -390,6 +390,9 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
 var _util = __webpack_require__(/*! @/static/js/util.js */ 45);
 
 
@@ -881,6 +884,28 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
           }
         }
       });
+    },
+    formSubmit: function formSubmit(e) {
+      var _this = this;
+      wx.request({
+        url: "https://xxx/mobiletplus/index.php?act=login&op=send_wx",
+        data: {
+          "form_id": e.detail.formId,
+          "access_token": _this.$store.state.token,
+          "touser": _this.$store.state.openid,
+          "template_id": 'l0xzq4i-qbvpmhEL6q_RrfjiCn-qh5aO54qXEDkQ9f8' },
+
+        method: 'POST',
+        header: {
+          'content-type': 'application/x-www-form-urlencoded' },
+
+        success: function success(res) {
+          console.log('设置成功', res);
+        },
+        fail: function fail(e) {
+          console.log('设置失败', e);
+        } });
+
     },
     doSubmit: function doSubmit(e) {
       e.stopPropagation();

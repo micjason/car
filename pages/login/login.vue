@@ -1,6 +1,6 @@
 <template>
 	<view class="login">
-		<view :class="['login-logo',identify==1?'is-user':'']">
+		<view :class="['login-logo',type==1?'is-user':'']">
 			<image src="../../static/image/logo.png"></image>
 		</view>
 		<view class="login-box">
@@ -9,7 +9,7 @@
 			<view class="error" v-if="phoneError">电话号码有误</view>
 		</view>
 
-		<template v-if="identify==1">
+		<template v-if="type==1">
 			<view class="login-box">
 				<image src="../../static/image/user.png"></image>
 				<input v-model="username" placeholder="请输入用户名">
@@ -46,7 +46,7 @@
 				phoneError: false,
 				password: '',
 				passwordError: false,
-				identify: 1,
+				type: 1,
 				username: '',
 				v_num: '',
 				vid: '',
@@ -58,7 +58,7 @@
 		onLoad: function(option) {
 			console.log('option', option)
 			if (option) {
-				this.identify = parseInt(option.type)
+				this.type = parseInt(option.type)
 			}
 		},
 		created() {
@@ -73,7 +73,7 @@
 				} else {
 					_this.phoneError = false
 				}
-				if(this.identify==1){
+				if(this.type==1){
 					if (_this.username == '') {
 						uni.showToast({
 							icon: 'none',
@@ -102,14 +102,14 @@
 				
 				let postData = {
 					openid: _this.$store.state.openid,
-					type: _this.identify,
+					type: _this.type,
 					phone: _this.phone,
 				}
 				
-				if(this.identify==1){
+				if(this.type==1){
 					postData = {
 						openid: _this.$store.state.openid,
-						type: _this.identify,
+						type: _this.type,
 						phone: _this.phone,
 						username: _this.username,
 						v_num: _this.v_num,
@@ -131,7 +131,7 @@
 								_this.$store.commit('setToken', res.data.data.token)
 								_this.$store.commit('setMember', res.data.data.member_id)
 								let tmp_url = "/pages/list/list?type=${type}"
-								if (_this.identify === 3) {
+								if (_this.type === 3) {
 									tmp_url = "/pages/admin/index/index?type=${type}"
 								}
 								uni.navigateTo({
