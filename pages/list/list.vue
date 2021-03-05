@@ -38,14 +38,29 @@
 			</view>
 		</view>
 
-		<view class="list-add" v-if="type==1" @click.stop="jumpToDetail($event)">
-			<image class="list-add-new" src="../../static/image/new.png"></image>
+		<view class="list-add" v-if="type==1" >
+			<image @click.stop="jumpToDetail($event)" class="list-add-new" src="../../static/image/new.png"></image>
 		</view>
+
+		<div v-if="type==1" class="get-phone" @click="getPhone">
+			<image src="../../static/image/phone.png" mode=""></image>
+		</div>
+
+		<pop ref="pop" direction="center" :is_close="true" :is_mask="true" :width="80">
+			<div class="phone-box">
+				<div class="phone-title">可联系管理员号码：</div>
+				<div class="phone-box-wrapper" v-for="(item,index) in phoneData" :key="index">
+					<text>{{item.name}}:</text>
+					<text class="phone-box-phone" @click="doPhone(item.phone)">{{item.phone}}</text>
+				</div>
+			</div>
+		</pop>
 	</view>
 </template>
 
 <script>
 	import apiUrl from '@/static/js/api.js'
+	import pop from '@/components/ming-pop/ming-pop.vue'
 	export default {
 		data() {
 			return {
@@ -59,15 +74,16 @@
 				interval: 2000,
 				duration: 500,
 				imageList: [],
-				identify:''
+				identify: '',
+				phoneData: []
 			}
 		},
 		computed: {
 			type() {
 				let result = ''
-				if(this.identify==''){
+				if (this.identify == '') {
 					result = this.$store.state.type
-				}else{
+				} else {
 					result = this.identify
 				}
 				return result
@@ -76,8 +92,11 @@
 				return Math.ceil(this.total / this.limit)
 			}
 		},
+		components: {
+			pop
+		},
 		onLoad: function(option) {
-			console.log(123,option)
+			console.log(123, option)
 			if (option) {
 				this.identify = parseInt(option.type)
 			}
@@ -95,7 +114,22 @@
 				this.pageIndex = 1
 				this.total = 0
 			},
+			getPhone() {
+				this.$http('/wechat_api/admin/adminPhones', {}).then(res => {
+					console.log(111, res)
+					if (res.data.code === 0) {
+						this.phoneData = res.data.data.list
+					}
+					this.$refs.pop.show();
+				})
+			},
+			doPhone(num) {
+				wx.makePhoneCall({
+					phoneNumber: num
+				})
+			},
 			jumpToDetail(e, id, status, index) {
+				console.log(123,id)
 				e.stopPropagation()
 				let url = ''
 				if (id) {
@@ -105,7 +139,8 @@
 					order_info.order_no = this.listData[index].order_no
 					order_info.score = this.listData[index].comment_num
 					let tmp_order_info = encodeURIComponent(JSON.stringify(order_info))
-					url = `/pages/index/index?order_no=${id}&status=${status}&order_info=${tmp_order_info}&order_score=${order_info.score}`
+					url =
+						`/pages/index/index?order_no=${id}&status=${status}&order_info=${tmp_order_info}&order_score=${order_info.score}`
 				} else {
 					url = "/pages/index/index"
 				}
@@ -334,6 +369,41 @@
 			.list-add-new {
 				width: 160rpx;
 				height: 160rpx;
+			}
+		}
+
+		.phone-box {
+			font-size: 36rpx;
+			padding: 40rpx 0;
+
+			.phone-title {
+				margin-bottom: 20rpx;
+			}
+
+			.phone-box-wrapper {
+				margin-bottom: 30rpx;
+
+				.phone-box-phone {
+					color: #0e56ff;
+				}
+			}
+		}
+
+		.get-phone {
+			position: fixed;
+			bottom: 20%;
+			right: 40rpx;
+			width: 80rpx;
+			height: 80rpx;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border: 1px solid #1296db;
+			border-radius: 50%;
+
+			image {
+				width: 50rpx;
+				height: 50rpx;
 			}
 		}
 	}
