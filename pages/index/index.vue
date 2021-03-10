@@ -851,7 +851,7 @@
 					fail(err) {
 						console.log('设置失败', err)
 					},
-					complete() {
+					complete(res) {
 						console.log('设置完成', res)
 						_this.$http(post_url, post_data, 'POST').then(res => {
 							if (res.data.code == 0) {
