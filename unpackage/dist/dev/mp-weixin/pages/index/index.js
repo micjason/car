@@ -393,11 +393,29 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var _util = __webpack_require__(/*! @/static/js/util.js */ 45);
 
 
 
-var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 12));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var ruiDatePicker = function ruiDatePicker() {Promise.all(/*! require.ensure | components/rattenking-dtpicker/rattenking-dtpicker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/rattenking-dtpicker/rattenking-dtpicker")]).then((function () {return resolve(__webpack_require__(/*! @/components/rattenking-dtpicker/rattenking-dtpicker.vue */ 111));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
+var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 12));function _interopRequireDefault(obj) {return obj && obj.__esModule ? obj : { default: obj };}var ruiDatePicker = function ruiDatePicker() {Promise.all(/*! require.ensure | components/rattenking-dtpicker/rattenking-dtpicker */[__webpack_require__.e("common/vendor"), __webpack_require__.e("components/rattenking-dtpicker/rattenking-dtpicker")]).then((function () {return resolve(__webpack_require__(/*! @/components/rattenking-dtpicker/rattenking-dtpicker.vue */ 98));}).bind(null, __webpack_require__)).catch(__webpack_require__.oe);};var _default =
 {
   computed: {
     startDate: function startDate() {
@@ -447,8 +465,12 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
       score: 11,
       rangeIndex: 0,
       range: ['10分', '9分', '8分', '7分', '6分', '5分', '4分', '3分', '2分', '1分'],
-      from: '' };
+      from: '',
+      openid_manage: '' };
 
+  },
+  created: function created() {
+    this.getNews();
   },
   mounted: function mounted() {
     this.getBasicInfo();
@@ -478,6 +500,12 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
 
   },
   methods: {
+    getNews: function getNews() {var _this3 = this;
+      this.$http('/wechat_api/admin/adminOpenid', {}).then(function (res) {
+        console.log('getNews', res);
+        _this3.openid_manage = res.data.data;
+      });
+    },
     getMile: function getMile(e) {
       console.log(123, e);
       this.maintenance_mileage_number = e.detail.value;
@@ -523,8 +551,10 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
 
 
                 success: function success(uploadFileRes) {
-                  console.log('xubu', JSON.parse(uploadFileRes.data).data);
-                  var tmp_url = _api.default + JSON.parse(uploadFileRes.data).data;
+                  console.log('xubu', JSON.parse(uploadFileRes.data).
+                  data);
+                  var tmp_url = _api.default + JSON.parse(uploadFileRes.
+                  data).data;
                   var tmp_url_o = JSON.parse(uploadFileRes.data).data;
                   _this.order_img.push(tmp_url);
                   _this.order_origin_img.push(tmp_url_o);
@@ -571,7 +601,7 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
         } });
 
     },
-    openMap: function openMap() {var _this3 = this; //点击地图
+    openMap: function openMap() {var _this4 = this; //点击地图
       if (this.order_status == 3 && this.$store.state.type == 1 || this.$store.state.type == 2) {
         uni.openLocation({
           latitude: this.latitude,
@@ -586,9 +616,9 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
             console.log('详细地址：' + res.address);
             console.log('纬度：' + res.latitude);
             console.log('经度：' + res.longitude);
-            _this3.location = res.address;
-            _this3.longitude = res.longitude;
-            _this3.latitude = res.latitude;
+            _this4.location = res.address;
+            _this4.longitude = res.longitude;
+            _this4.latitude = res.latitude;
           } });
 
       }
@@ -713,7 +743,9 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
               if (item2.brand && item2.brand.length > 0) {
                 item2.brand.forEach(function (item3, index3) {
                   if (item3.item_type && item3.item_type.length > 0) {
-                    result += Number(item3.item_type[item3.itemValue].good_number) * Number(item3.item_type[item3.itemValue].
+                    result += Number(item3.item_type[item3.itemValue].
+                    good_number) * Number(item3.item_type[item3.
+                    itemValue].
                     good_price);
                   }
                 });
@@ -808,7 +840,8 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
           _this.location = res1.data.data.order_address || '';
           _this.result = res1.data.data.order_money || '';
 
-          var tmp_img_list = res1.data.data.order_img == '' ? [] : res1.data.data.order_img.split(',');
+          var tmp_img_list = res1.data.data.order_img == '' ? [] : res1.data.data.order_img.split(
+          ',');
           var tmp_img_result = [];
           var tmp_img_result2 = [];
           if (tmp_img_list && tmp_img_list.length > 0) {
@@ -834,13 +867,21 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
                       item.brandValue = 0;
                       item.brand_ids = [];
                       item.brand.forEach(function (item2) {
-                        item.brand_ids.push(item2.brand_id);
-                        if (item2.item_type && item2.item_type.length > 0) {
+                        item.brand_ids.push(item2.
+                        brand_id);
+                        if (item2.item_type && item2.
+                        item_type.length > 0) {
                           item2.itemValue = 0;
                           item2.item_ids = [];
-                          item2.item_type.forEach(function (item3) {
-                            item2.item_ids.push(item3.item_type_id);
-                            item3.good_number = 0;
+                          item2.item_type.forEach(
+                          function (item3) {
+                            item2.item_ids.
+                            push(item3.
+                            item_type_id);
+
+                            item3.
+                            good_number =
+                            0;
                           });
                         }
                       });
@@ -851,16 +892,36 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
                   if (order_item.good && order_item.good.length > 0) {
                     order_item.good.forEach(function (good_item) {
                       res2.data.data.forEach(function (x) {
-                        if (good_item.parts_id == x.parts_id) {
-                          x.brandValue = x.brand_ids.indexOf(good_item.brand_id);
+                        if (good_item.parts_id == x.
+                        parts_id) {
+                          x.brandValue = x.brand_ids.
+                          indexOf(good_item.
+                          brand_id);
 
                           x.brand.forEach(function (y) {
-                            if (good_item.brand_id == y.brand_id) {
-                              y.itemValue = y.item_ids.indexOf(good_item.item_type_id);
+                            if (good_item.
+                            brand_id ==
+                            y.brand_id)
+                            {
+                              y.itemValue =
+                              y.
+                              item_ids.
+                              indexOf(
+                              good_item.
+                              item_type_id);
 
-                              y.item_type.forEach(function (z) {
-                                if (good_item.good_id == z.good_id) {
-                                  z.good_number = good_item.good_number;
+
+                              y.item_type.
+                              forEach(
+                              function (z) {
+                                if (good_item.
+                                good_id ==
+                                z.
+                                good_id)
+                                {
+                                  z.good_number =
+                                  good_item.
+                                  good_number;
                                 }
                               });
                             }
@@ -874,8 +935,10 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
                   _this.projectArray.forEach(function (pro_item) {
                     project_ids.push(pro_item.maintenance_items_id);
                   });
-                  var order_item_index = project_ids.indexOf(order_item.maintenance_items_id);
-                  _this.projectArray[order_item_index].content = res2.data.data;
+                  var order_item_index = project_ids.indexOf(order_item.
+                  maintenance_items_id);
+                  _this.projectArray[order_item_index].content = res2.data.
+                  data;
 
                   _this.$forceUpdate();
                 }
@@ -885,28 +948,6 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
         }
       });
     },
-    // formSubmit(e) {
-    // 	let _this = this
-    // 	wx.request({
-    // 		url: "https://xxx/mobiletplus/index.php?act=login&op=send_wx",
-    // 		data: {
-    // 			"form_id": e.detail.formId,
-    // 			"access_token": _this.$store.state.token,
-    // 			"touser": _this.$store.state.openid,
-    // 			"template_id": 'l0xzq4i-qbvpmhEL6q_RrfjiCn-qh5aO54qXEDkQ9f8'
-    // 		},
-    // 		method: 'POST',
-    // 		header: {
-    // 			'content-type': 'application/x-www-form-urlencoded'
-    // 		},
-    // 		success: function(res) {
-    // 			console.log('设置成功', res)
-    // 		},
-    // 		fail: function(e) {
-    // 			console.log('设置失败', e)
-    // 		}
-    // 	})
-    // },
     doSubmit: function doSubmit(e) {
       e.stopPropagation();
       var _this = this;
@@ -943,20 +984,30 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
               if (item2.brand && item2.brand.length > 0) {
                 item2.brand.forEach(function (item3, index3) {
                   if (item3.item_type && item3.item_type.length > 0) {
-                    console.log(111, Number(item3.item_type[item3.itemValue].good_number));
-                    if (Number(item3.item_type[item3.itemValue].good_number) > 0) {
+                    console.log(111, Number(item3.item_type[item3.
+                    itemValue].good_number));
+                    if (Number(item3.item_type[item3.itemValue].
+                    good_number) > 0) {
                       var tmp_obj = {};
-                      tmp_obj.maintenance_items_id = item.maintenance_items_id;
-                      tmp_obj.maintenance_items_name = item.maintenance_items_name;
+                      tmp_obj.maintenance_items_id = item.
+                      maintenance_items_id;
+                      tmp_obj.maintenance_items_name = item.
+                      maintenance_items_name;
                       tmp_obj.parts_id = item2.parts_id;
                       tmp_obj.parts_name = item2.parts_name;
                       tmp_obj.brand_id = item3.brand_id;
                       tmp_obj.brand_name = item3.brand_name;
-                      tmp_obj.item_type_name = item3.item_type[item3.itemValue].item_type_name;
-                      tmp_obj.good_id = item3.item_type[item3.itemValue].good_id;
-                      tmp_obj.good_price = item3.item_type[item3.itemValue].good_price;
-                      tmp_obj.good_number = item3.item_type[item3.itemValue].good_number;
-                      tmp_obj.good_all_price = Number(item3.item_type[item3.itemValue].good_price) * Number(item3.item_type[
+                      tmp_obj.item_type_name = item3.item_type[item3.
+                      itemValue].item_type_name;
+                      tmp_obj.good_id = item3.item_type[item3.itemValue].
+                      good_id;
+                      tmp_obj.good_price = item3.item_type[item3.
+                      itemValue].good_price;
+                      tmp_obj.good_number = item3.item_type[item3.
+                      itemValue].good_number;
+                      tmp_obj.good_all_price = Number(item3.item_type[
+                      item3.itemValue].good_price) * Number(item3.
+                      item_type[
                       item3.itemValue].good_number);
                       order_detail.push(tmp_obj);
                     }
@@ -995,35 +1046,24 @@ var _api = _interopRequireDefault(__webpack_require__(/*! @/static/js/api.js */ 
         post_data.order_img = _this.order_origin_img.join(',');
         post_data.order_address = _this.location;
       }
-      wx.requestSubscribeMessage({
-        tmplIds: ['l0xzq4i-qbvpmhEL6q_RrfjiCn-qh5aO54qXEDkQ9f8'],
-        success: function success(res) {
-          console.log('设置成功', res);
-        },
-        fail: function fail(err) {
-          console.log('设置失败', err);
-        },
-        complete: function complete() {
-          console.log('设置完成', res);
-          _this.$http(post_url, post_data, 'POST').then(function (res) {
-            if (res.data.code == 0) {
-              uni.showToast({
-                icon: 'none',
-                title: res.data.msg,
-                duration: 1000,
-                mask: true,
-                success: function success() {
-                  setTimeout(function () {
-                    uni.navigateBack({
-                      delta: 1 });
 
-                  }, 1000);
-                } });
+      _this.$http(post_url, post_data, 'POST').then(function (res) {
+        if (res.data.code == 0) {
+          uni.showToast({
+            icon: 'none',
+            title: res.data.msg,
+            duration: 1000,
+            mask: true,
+            success: function success() {
+              setTimeout(function () {
+                uni.navigateBack({
+                  delta: 1 });
 
-            }
-          });
-        } });
+              }, 1000);
+            } });
 
+        }
+      });
 
     },
     docomplete: function docomplete(e) {

@@ -65,8 +65,8 @@
 						里程
 					</view>
 					<view class="info-value">
-						<input type="text" :disabled="canWrite?false:true" @input="getMile" :value="maintenance_mileage_number"
-						 placeholder="请输入里程">
+						<input type="text" :disabled="canWrite?false:true" @input="getMile"
+							:value="maintenance_mileage_number" placeholder="请输入里程">
 					</view>
 				</view>
 			</view>
@@ -95,8 +95,8 @@
 							<image src="../../static/image/arrow.png"></image>
 						</view>
 
-						<picker :disabled="canWrite?false:true" class="hide-pick" mode="date" value="" :start="startDate" :end="endDate"
-						 @change="bindNextChange">
+						<picker :disabled="canWrite?false:true" class="hide-pick" mode="date" value=""
+							:start="startDate" :end="endDate" @change="bindNextChange">
 							<view class="hide-pick-time">下次换油日期</view>
 						</picker>
 
@@ -117,8 +117,8 @@
 							<image src="../../static/image/arrow.png"></image>
 						</view>
 
-						<ruiDatePicker class="hide-pick" fields="hour" start="2010-00-00 00" end="2030-12-30 23" :value="order_delivery_time"
-						 @change="bindSendChange"></ruiDatePicker>
+						<ruiDatePicker class="hide-pick" fields="hour" start="2010-00-00 00" end="2030-12-30 23"
+							:value="order_delivery_time" @change="bindSendChange"></ruiDatePicker>
 					</view>
 				</view>
 			</view>
@@ -138,7 +138,8 @@
 					维修图片
 				</view>
 				<view class="info-picture-right">
-					<view class="info-picture-box" v-for="(item,index) in order_img" :key="index" @click='getPreview(index)'>
+					<view class="info-picture-box" v-for="(item,index) in order_img" :key="index"
+						@click='getPreview(index)'>
 						<image class="info-picture-cell" :src="item"></image>
 						<view v-if='canWrite' class="picture-delete" @click.stop="deleteImage($event,index)">
 							<image src="../../static/image/delete-image.png"></image>
@@ -174,31 +175,45 @@
 									<view>{{item2.brand[item2.brandValue].brand_name}}</view>
 									<image class="project-type-spread" src="../../static/image/down.png"></image>
 
-									<picker v-if="canWrite" class="hide-pick" @change="bindBrandChange($event,index,index2)" :value="item2.brandValue"
-									 :range="item2.brand" range-key="brand_name">
+									<picker v-if="canWrite" class="hide-pick"
+										@change="bindBrandChange($event,index,index2)" :value="item2.brandValue"
+										:range="item2.brand" range-key="brand_name">
 										<view class="hide-pick-type">{{item2.brand[item2.brandValue].brand_name}}</view>
 									</picker>
 								</view>
 
-								<view class="project-left-type" v-if="item2.brand&&item2.brand.length>0&&item2.brand[item2.brandValue].item_type&&item2.brand[item2.brandValue].item_type.length>0">
-									<view>{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].item_type_name}}</view>
+								<view class="project-left-type"
+									v-if="item2.brand&&item2.brand.length>0&&item2.brand[item2.brandValue].item_type&&item2.brand[item2.brandValue].item_type.length>0">
+									<view>
+										{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].item_type_name}}
+									</view>
 									<image class="project-type-spread" src="../../static/image/down.png"></image>
 
-									<picker v-if="canWrite" class="hide-pick" @change="bindTypeChange($event,index,index2)" :value="item2.brand[item2.brandValue].itemValue"
-									 :range="item2.brand[item2.brandValue].item_type" range-key="item_type_name">
-										<view class="hide-pick-type">{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].item_type_name}}</view>
+									<picker v-if="canWrite" class="hide-pick"
+										@change="bindTypeChange($event,index,index2)"
+										:value="item2.brand[item2.brandValue].itemValue"
+										:range="item2.brand[item2.brandValue].item_type" range-key="item_type_name">
+										<view class="hide-pick-type">
+											{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].item_type_name}}
+										</view>
 									</picker>
 								</view>
 							</view>
-							<view class="project-left-price" v-if="item2.brand&&item2.brand.length>0&&item2.brand[item2.brandValue].item_type&&item2.brand[item2.brandValue].item_type.length>0">
+							<view class="project-left-price"
+								v-if="item2.brand&&item2.brand.length>0&&item2.brand[item2.brandValue].item_type&&item2.brand[item2.brandValue].item_type.length>0">
 								￥{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_price}}
-								<text class="project-price-unit">/{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_unit}}</text>
+								<text
+									class="project-price-unit">/{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_unit}}</text>
 							</view>
 						</view>
 						<view class="project-right">
-							<image v-if="canWrite" @click="getNumber('minus',index,index2)" class="project-right-minus" src='../../static/image/minus.png'></image>
-							<view class="project-right-number">{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_number==0?'':item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_number}}</view>
-							<image v-if="canWrite" @click="getNumber('plus',index,index2)" class="project-right-plus" src='../../static/image/plus.png'></image>
+							<image v-if="canWrite" @click="getNumber('minus',index,index2)" class="project-right-minus"
+								src='../../static/image/minus.png'></image>
+							<view class="project-right-number">
+								{{item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_number==0?'':item2.brand[item2.brandValue].item_type[item2.brand[item2.brandValue].itemValue].good_number}}
+							</view>
+							<image v-if="canWrite" @click="getNumber('plus',index,index2)" class="project-right-plus"
+								src='../../static/image/plus.png'></image>
 						</view>
 					</view>
 				</template>
@@ -207,7 +222,8 @@
 		<view class="project-add" v-if="projectArray.length>0 && canWrite">
 			<image class="project-add-icon" src='../../static/image/add.png'></image>
 			<view class="project-add-text">添加维修项目</view>
-			<picker class="hide-pick" @change="handleProject" :value="projectIndex" :range="projectArray" range-key="maintenance_items_name">
+			<picker class="hide-pick" @change="handleProject" :value="projectIndex" :range="projectArray"
+				range-key="maintenance_items_name">
 				<view class="hide-pick-project">维修项目</view>
 			</picker>
 		</view>
@@ -222,11 +238,13 @@
 					</view>
 				</view>
 			</view>
-			<view class="result-btn" @click.stop='doSubmit($event)' v-if="type==1&&order_status!=3&&order_status!=5">提交</view>
+			<view class="result-btn" @click.stop='doSubmit($event)' v-if="type==1&&order_status!=3&&order_status!=5">提交
+			</view>
 			<!-- <form bindsubmit="formSubmit" report-submit="true">
 			      <button class="result-btn" formType="submit">允许通知我</button>
 			</form> -->
-			<view class="result-btn result-submit" @click.stop='doSubmit($event)' v-if="type==2&&order_status!=3&&order_status!=5">提交修改</view>
+			<view class="result-btn result-submit" @click.stop='doSubmit($event)'
+				v-if="type==2&&order_status!=3&&order_status!=5">提交修改</view>
 			<view class="result-btn" @click.stop='docomplete($event)' v-if="type==2&&order_status==2">订单完成</view>
 			<view class="result-btn" v-if="type==1&&order_status==3">
 				点击评分
@@ -295,8 +313,12 @@
 				score: 11,
 				rangeIndex: 0,
 				range: ['10分', '9分', '8分', '7分', '6分', '5分', '4分', '3分', '2分', '1分'],
-				from: ''
+				from: '',
+				openid_manage: ''
 			}
+		},
+		created() {
+			this.getNews()
 		},
 		mounted() {
 			this.getBasicInfo()
@@ -326,6 +348,12 @@
 			});
 		},
 		methods: {
+			getNews() {
+				this.$http('/wechat_api/admin/adminOpenid', {}).then(res => {
+					console.log('getNews', res)
+					this.openid_manage = res.data.data
+				})
+			},
 			getMile(e) {
 				console.log(123, e)
 				this.maintenance_mileage_number = e.detail.value
@@ -371,8 +399,10 @@
 
 									},
 									success: (uploadFileRes) => {
-										console.log('xubu', JSON.parse(uploadFileRes.data).data);
-										let tmp_url = apiUrl + JSON.parse(uploadFileRes.data).data
+										console.log('xubu', JSON.parse(uploadFileRes.data)
+											.data);
+										let tmp_url = apiUrl + JSON.parse(uploadFileRes
+											.data).data
 										let tmp_url_o = JSON.parse(uploadFileRes.data).data
 										_this.order_img.push(tmp_url)
 										_this.order_origin_img.push(tmp_url_o)
@@ -561,7 +591,9 @@
 								if (item2.brand && item2.brand.length > 0) {
 									item2.brand.forEach((item3, index3) => {
 										if (item3.item_type && item3.item_type.length > 0) {
-											result += Number(item3.item_type[item3.itemValue].good_number) * Number(item3.item_type[item3.itemValue]
+											result += Number(item3.item_type[item3.itemValue]
+												.good_number) * Number(item3.item_type[item3
+													.itemValue]
 												.good_price)
 										}
 									})
@@ -656,7 +688,8 @@
 						_this.location = res1.data.data.order_address || ''
 						_this.result = res1.data.data.order_money || ''
 
-						let tmp_img_list = res1.data.data.order_img == '' ? [] : res1.data.data.order_img.split(',')
+						let tmp_img_list = res1.data.data.order_img == '' ? [] : res1.data.data.order_img.split(
+							',')
 						let tmp_img_result = []
 						let tmp_img_result2 = []
 						if (tmp_img_list && tmp_img_list.length > 0) {
@@ -682,14 +715,22 @@
 												item.brandValue = 0
 												item.brand_ids = []
 												item.brand.forEach(item2 => {
-													item.brand_ids.push(item2.brand_id)
-													if (item2.item_type && item2.item_type.length > 0) {
+													item.brand_ids.push(item2
+														.brand_id)
+													if (item2.item_type && item2
+														.item_type.length > 0) {
 														item2.itemValue = 0
 														item2.item_ids = []
-														item2.item_type.forEach(item3 => {
-															item2.item_ids.push(item3.item_type_id)
-															item3.good_number = 0
-														})
+														item2.item_type.forEach(
+															item3 => {
+																item2.item_ids
+																	.push(item3
+																		.item_type_id
+																		)
+																item3
+																	.good_number =
+																	0
+															})
 													}
 												})
 											}
@@ -699,18 +740,38 @@
 										if (order_item.good && order_item.good.length > 0) {
 											order_item.good.forEach(good_item => {
 												res2.data.data.forEach(x => {
-													if (good_item.parts_id == x.parts_id) {
-														x.brandValue = x.brand_ids.indexOf(good_item.brand_id)
+													if (good_item.parts_id == x
+														.parts_id) {
+														x.brandValue = x.brand_ids
+															.indexOf(good_item
+																.brand_id)
 
 														x.brand.forEach(y => {
-															if (good_item.brand_id == y.brand_id) {
-																y.itemValue = y.item_ids.indexOf(good_item.item_type_id)
+															if (good_item
+																.brand_id ==
+																y.brand_id
+																) {
+																y.itemValue =
+																	y
+																	.item_ids
+																	.indexOf(
+																		good_item
+																		.item_type_id
+																		)
 
-																y.item_type.forEach(z => {
-																	if (good_item.good_id == z.good_id) {
-																		z.good_number = good_item.good_number
-																	}
-																})
+																y.item_type
+																	.forEach(
+																		z => {
+																			if (good_item
+																				.good_id ==
+																				z
+																				.good_id
+																				) {
+																				z.good_number =
+																					good_item
+																					.good_number
+																			}
+																		})
 															}
 														})
 													}
@@ -722,8 +783,10 @@
 										_this.projectArray.forEach(pro_item => {
 											project_ids.push(pro_item.maintenance_items_id)
 										})
-										let order_item_index = project_ids.indexOf(order_item.maintenance_items_id)
-										_this.projectArray[order_item_index].content = res2.data.data
+										let order_item_index = project_ids.indexOf(order_item
+											.maintenance_items_id)
+										_this.projectArray[order_item_index].content = res2.data
+											.data
 
 										_this.$forceUpdate()
 									}
@@ -733,28 +796,6 @@
 					}
 				})
 			},
-			// formSubmit(e) {
-			// 	let _this = this
-			// 	wx.request({
-			// 		url: "https://xxx/mobiletplus/index.php?act=login&op=send_wx",
-			// 		data: {
-			// 			"form_id": e.detail.formId,
-			// 			"access_token": _this.$store.state.token,
-			// 			"touser": _this.$store.state.openid,
-			// 			"template_id": 'l0xzq4i-qbvpmhEL6q_RrfjiCn-qh5aO54qXEDkQ9f8'
-			// 		},
-			// 		method: 'POST',
-			// 		header: {
-			// 			'content-type': 'application/x-www-form-urlencoded'
-			// 		},
-			// 		success: function(res) {
-			// 			console.log('设置成功', res)
-			// 		},
-			// 		fail: function(e) {
-			// 			console.log('设置失败', e)
-			// 		}
-			// 	})
-			// },
 			doSubmit(e) {
 				e.stopPropagation()
 				const _this = this
@@ -791,21 +832,31 @@
 								if (item2.brand && item2.brand.length > 0) {
 									item2.brand.forEach((item3, index3) => {
 										if (item3.item_type && item3.item_type.length > 0) {
-											console.log(111, Number(item3.item_type[item3.itemValue].good_number))
-											if (Number(item3.item_type[item3.itemValue].good_number) > 0) {
+											console.log(111, Number(item3.item_type[item3
+												.itemValue].good_number))
+											if (Number(item3.item_type[item3.itemValue]
+													.good_number) > 0) {
 												let tmp_obj = {}
-												tmp_obj.maintenance_items_id = item.maintenance_items_id
-												tmp_obj.maintenance_items_name = item.maintenance_items_name
+												tmp_obj.maintenance_items_id = item
+													.maintenance_items_id
+												tmp_obj.maintenance_items_name = item
+													.maintenance_items_name
 												tmp_obj.parts_id = item2.parts_id
 												tmp_obj.parts_name = item2.parts_name
 												tmp_obj.brand_id = item3.brand_id
 												tmp_obj.brand_name = item3.brand_name
-												tmp_obj.item_type_name = item3.item_type[item3.itemValue].item_type_name
-												tmp_obj.good_id = item3.item_type[item3.itemValue].good_id
-												tmp_obj.good_price = item3.item_type[item3.itemValue].good_price
-												tmp_obj.good_number = item3.item_type[item3.itemValue].good_number
-												tmp_obj.good_all_price = Number(item3.item_type[item3.itemValue].good_price) * Number(item3.item_type[
-													item3.itemValue].good_number)
+												tmp_obj.item_type_name = item3.item_type[item3
+													.itemValue].item_type_name
+												tmp_obj.good_id = item3.item_type[item3.itemValue]
+													.good_id
+												tmp_obj.good_price = item3.item_type[item3
+													.itemValue].good_price
+												tmp_obj.good_number = item3.item_type[item3
+													.itemValue].good_number
+												tmp_obj.good_all_price = Number(item3.item_type[
+													item3.itemValue].good_price) * Number(item3
+													.item_type[
+														item3.itemValue].good_number)
 												order_detail.push(tmp_obj)
 											}
 										}
@@ -843,36 +894,25 @@
 					post_data.order_img = _this.order_origin_img.join(',')
 					post_data.order_address = _this.location
 				}
-				wx.requestSubscribeMessage({
-					tmplIds: ['l0xzq4i-qbvpmhEL6q_RrfjiCn-qh5aO54qXEDkQ9f8'],
-					success(res) {
-						console.log('设置成功', res)
-					},
-					fail(err) {
-						console.log('设置失败', err)
-					},
-					complete(res) {
-						console.log('设置完成', res)
-						_this.$http(post_url, post_data, 'POST').then(res => {
-							if (res.data.code == 0) {
-								uni.showToast({
-									icon: 'none',
-									title: res.data.msg,
-									duration: 1000,
-									mask: true,
-									success: () => {
-										setTimeout(function() {
-											uni.navigateBack({
-												delta: 1
-											});
-										}, 1000)
-									}
-								});
+
+				_this.$http(post_url, post_data, 'POST').then(res => {
+					if (res.data.code == 0) {
+						uni.showToast({
+							icon: 'none',
+							title: res.data.msg,
+							duration: 1000,
+							mask: true,
+							success: () => {
+								setTimeout(function() {
+									uni.navigateBack({
+										delta: 1
+									});
+								}, 1000)
 							}
-						})
-					},
+						});
+					}
 				})
-				
+
 			},
 			docomplete(e) {
 				const _this = this
